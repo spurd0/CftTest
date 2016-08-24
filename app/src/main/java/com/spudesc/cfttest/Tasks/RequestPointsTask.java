@@ -1,5 +1,6 @@
 package com.spudesc.cfttest.Tasks;
 
+import com.spudesc.cfttest.Interfaces.ResponseInterface;
 import com.spudesc.cfttest.Managers.RequestPointsSender;
 import com.spudesc.cfttest.R;
 
@@ -16,17 +17,19 @@ import java.security.NoSuchAlgorithmException;
 public class RequestPointsTask {
     private String http_url;
     private String params;
+    private ResponseInterface ri;
 
-    public RequestPointsTask(String http_url, String params) {
+    public RequestPointsTask(String http_url, String params, ResponseInterface ri) {
         this.http_url = http_url;
         this.params = params;
+        this.ri = ri;
         sendRequest();
     }
 
-    private String sendRequest() {
+    private void sendRequest() {
         RequestPointsSender rs = new RequestPointsSender(http_url, params);
         try {
-            return responseToString(rs.sendRequest()); // HANDLE ANSWER HERE
+            ri.serverResponse(responseToString(rs.sendRequest()));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -34,7 +37,6 @@ public class RequestPointsTask {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return ("Error");
     }
 
     private String responseToString(InputStream is) {
