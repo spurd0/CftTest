@@ -1,5 +1,7 @@
 package com.spudesc.cfttest.Tasks;
 
+import android.app.Activity;
+
 import com.spudesc.cfttest.Data.RequestParams;
 import com.spudesc.cfttest.Interfaces.ResponseInterface;
 

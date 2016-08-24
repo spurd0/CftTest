@@ -1,8 +1,9 @@
 package com.spudesc.cfttest.Tasks;
 
+import com.google.gson.Gson;
+import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Interfaces.ResponseInterface;
 import com.spudesc.cfttest.Managers.RequestPointsSender;
-import com.spudesc.cfttest.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +30,9 @@ public class RequestPointsTask {
     private void sendRequest() {
         RequestPointsSender rs = new RequestPointsSender(http_url, params);
         try {
-            ri.serverResponse(responseToString(rs.sendRequest()));
+            ServerResponse serverResponse = new Gson().fromJson(responseToString(rs.sendRequest()),
+                    ServerResponse.class);
+            handleServerResponse(serverResponse);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -51,6 +54,26 @@ public class RequestPointsTask {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private void handleServerResponse(ServerResponse serverResponse) {
+        int result = serverResponse.result;
+        switch (result) {
+            case 0: {
+                ri.successServerResponse(serverResponse);
+                break;
+            }
+            case -1: {
+                ri.busyErrorServerResponse(serverResponse);
+                break;
+            }
+            case -100:
+            default: {
+                ri.wrongParamsServerResponse(serverResponse);
+                break;
+            }
+        }
+
     }
 
 }

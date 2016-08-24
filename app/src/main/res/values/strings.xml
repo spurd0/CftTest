@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CftTest</string>
+    <string name="network_error">Internet connection is required for operation</string>
 </resources>
