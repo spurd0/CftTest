@@ -1,8 +1,7 @@
 package com.spudesc.cfttest.Tasks;
 
-import android.util.Log;
-
 import com.spudesc.cfttest.Managers.RequestPointsSender;
+import com.spudesc.cfttest.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,10 +23,10 @@ public class RequestPointsTask {
         sendRequest();
     }
 
-    private void sendRequest() {
+    private String sendRequest() {
         RequestPointsSender rs = new RequestPointsSender(http_url, params);
         try {
-            Log.d("Response = ", readResponse(rs.sendRequest()));
+            return responseToString(rs.sendRequest()); // HANDLE ANSWER HERE
         } catch (IOException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -35,9 +34,10 @@ public class RequestPointsTask {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+        return ("Error");
     }
 
-    private String readResponse(InputStream is) {
+    private String responseToString(InputStream is) {
         String result = new String();
         BufferedReader in = new BufferedReader(new InputStreamReader(is));
         String inputLine;

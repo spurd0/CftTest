@@ -27,7 +27,7 @@ public class RequestPointsSender {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        TrustManager[] trustAllCerts = new TrustManager[]{
+        TrustManager[] trustAllCerts = new TrustManager[]{ // i trust cft
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return null;

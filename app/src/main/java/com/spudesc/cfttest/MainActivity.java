@@ -20,11 +20,16 @@ public class MainActivity extends AppCompatActivity implements RequestInterface{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        requestPoints(10);
+    }
+
+    @Override
+    public void requestPoints(final int count) {
         Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
-                    RequestBuilder.getRequestedPoints(3);
+                    Log.d("Response =", RequestBuilder.getRequestedPoints(count));
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -32,48 +37,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface{
                 } catch (KeyManagementException e) {
                     e.printStackTrace();
                 }
-                //readResponce();
             }
         };
 
         thread.start();
 
-    }
-
-    @Override
-    public void requestPoints(int count) {
-//        try {
-//            //Log.d("Test",);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (KeyManagementException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    void readResponce() {
-        String result = new String();
-        InputStream is = null;
-//        try {
-//            is = RequestBuilder.getRequestedPoints(3);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (KeyManagementException e) {
-//            e.printStackTrace();
-//        }
-        BufferedReader in = new BufferedReader(new InputStreamReader(is));
-        String inputLine;
-        try {
-            while ((inputLine = in.readLine()) != null) {
-                result += inputLine;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("Test", result);
     }
 }
