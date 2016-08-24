@@ -1,7 +1,9 @@
 package com.spudesc.cfttest;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,17 +59,17 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void successServerResponse(ServerResponse response) {
-        Log.d("serverResponse is", String.valueOf(response.result));
+        Log.d("serverResponse is", String.valueOf(response.response.message));
     }
 
     @Override
     public void busyErrorServerResponse(ServerResponse response) {
-        //todo show alerdialog
+        showAd(getResources().getString(R.string.server_busy));
     }
 
     @Override
     public void wrongParamsServerResponse(ServerResponse response) {
-        //todo show alerdialog
+        showAd(getResources().getString(R.string.wrong_params));
     }
 
     private boolean isNetworkConnected() {
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         return cm.getActiveNetworkInfo() != null;
     }
 
-    public void showToast(final String text) {
+    private void showToast(final String text) {
         final Toast toast = Toast.makeText(getApplicationContext(),
                 text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM, 0, 0);
@@ -83,6 +85,25 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             @Override
             public void run() {
                 toast.show();
+            }
+        });
+    }
+
+    private void showAd(final String text) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(getResources().getString(R.string.title_text))
+                .setMessage(text)
+                .setCancelable(true)
+                .setNegativeButton(getResources().getString(R.string.ok_button),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                builder.show();
             }
         });
     }

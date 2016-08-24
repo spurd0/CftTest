@@ -3,4 +3,41 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@+id/tvInfo" style="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/information_text"
+            android:layout_alignParentLeft="false" android:layout_marginLeft="5dp"
+            android:layout_alignParentTop="true" android:maxWidth="500dp"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/etCounter"
+            android:layout_below="@+id/tvInfo"
+            android:layout_centerHorizontal="true"
+            android:padding="5dp"
+            android:hint="@string/points_count_hint"
+            android:singleLine="true"
+            android:gravity="center"
+            android:layout_margin="20dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_button"
+            android:id="@+id/goButt"
+            android:layout_below="@+id/etCounter"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp" android:paddingTop="8dp"/>
+
+    </RelativeLayout>
 </RelativeLayout>
