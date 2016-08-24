@@ -8,5 +8,6 @@
     <string name="title_text">Message</string>
     <string name="server_busy">Server is busy, please try later</string>
     <string name="wrong_params">Wrong parameters, please check counter</string>
+    <string name="downloading">Loading, please wait</string>
 
 </resources>

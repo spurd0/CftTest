@@ -69,18 +69,28 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void successServerResponse(ServerResponse response) {
-        Log.d("serverResponse is", String.valueOf(response.response.points.get(0).x));
+        if (requestFragment != null) requestFragment.requestPerformed = false;
         this.response = response;
         }
 
     @Override
     public void busyErrorServerResponse(ServerResponse response) {
+        if (requestFragment != null) requestFragment.requestPerformed = false;
         showAd(getResources().getString(R.string.server_busy));
     }
 
     @Override
-    public void wrongParamsServerResponse(ServerResponse response) {
-        showAd(getResources().getString(R.string.wrong_params));
+    public void wrongParamsServerResponse(final ServerResponse response) {
+        if (requestFragment != null) requestFragment.requestPerformed = false;
+        if (requestFragment != null && requestFragment.isVisible()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    requestFragment.
+                            showCountError(getResources().getString(R.string.wrong_params) + response.response.message);
+                }
+            });
+        }
     }
 
     private boolean isNetworkConnected() {
@@ -88,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         return cm.getActiveNetworkInfo() != null;
     }
 
-    private void showToast(final String text) {
+    public void showToast(final String text) {
         final Toast toast = Toast.makeText(getApplicationContext(),
                 text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM, 0, 0);
@@ -100,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         });
     }
 
-    private void showAd(final String text) {
+    public void showAd(final String text) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(getResources().getString(R.string.title_text))
                 .setMessage(text)

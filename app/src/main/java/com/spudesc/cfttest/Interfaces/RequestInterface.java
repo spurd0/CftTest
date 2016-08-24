@@ -6,4 +6,6 @@ package com.spudesc.cfttest.Interfaces;
 public interface RequestInterface {
     void requestPoints(int count);
     void cancelRequest();
+    void showAd(String text);
+    void showToast(final String text);
 }
