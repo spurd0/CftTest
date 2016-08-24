@@ -6,25 +6,24 @@ import android.os.Parcelable;
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
-public class PointResponse implements Parcelable {
-    double x;
-    double y;
+public class Point implements Parcelable {
+    public double x;
+    public double y;
 
-
-    protected PointResponse(Parcel in) {
+    protected Point(Parcel in) {
         x = in.readDouble();
         y = in.readDouble();
     }
 
-    public static final Creator<PointResponse> CREATOR = new Creator<PointResponse>() {
+    public static final Creator<Point> CREATOR = new Creator<Point>() {
         @Override
-        public PointResponse createFromParcel(Parcel in) {
-            return new PointResponse(in);
+        public Point createFromParcel(Parcel in) {
+            return new Point(in);
         }
 
         @Override
-        public PointResponse[] newArray(int size) {
-            return new PointResponse[size];
+        public Point[] newArray(int size) {
+            return new Point[size];
         }
     };
 

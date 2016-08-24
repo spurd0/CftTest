@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.spudesc.cfttest.Interfaces.RequestInterface;
 import com.spudesc.cfttest.R;
@@ -30,7 +32,15 @@ public class RequestFragment extends Fragment {
     }
 
     private void initViews() {
-
+        Button goButt = (Button) getView().findViewById(R.id.goButt);
+        final EditText etCounter = (EditText) getView().findViewById(R.id.etCounter);
+        goButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) { // add checker
+                Log.d("RequestFragment", "count is " + Integer.valueOf(etCounter.getText().toString()));
+                ri.requestPoints(Integer.valueOf(etCounter.getText().toString()));
+            }
+        });
     }
 
     @Override

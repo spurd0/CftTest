@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Fragments.RequestFragment;
+import com.spudesc.cfttest.Fragments.ResponseFragment;
 import com.spudesc.cfttest.Interfaces.ResponseInterface;
 import com.spudesc.cfttest.Tasks.RequestBuilder;
 import com.spudesc.cfttest.Interfaces.RequestInterface;
@@ -23,12 +24,14 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity implements RequestInterface, ResponseInterface{
     Thread requestThread;
     RequestFragment requestFragment;
+    ServerResponse response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPoints(-1);
+        //requestPoints(3);
+        showRequestFragment();
     }
 
     @Override
@@ -66,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void successServerResponse(ServerResponse response) {
-        Log.d("serverResponse is", String.valueOf(response.response.message));
+        Log.d("serverResponse is", String.valueOf(response.response.points.get(0).x));
+        this.response = response;
         }
 
     @Override
@@ -118,9 +122,27 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     private void showRequestFragment(){
         if (requestFragment == null) {
             requestFragment = new RequestFragment();
+            requestFragment.setRequestInterface(this);
         }
+        getFragmentManager().beginTransaction()
+                .replace(R.id.main_layout, requestFragment)
+                .commit();
 
-        //add data to fragment via bundle
+
+    }
+
+    private void showResponseFragment(){
+        ResponseFragment responseFragment = new ResponseFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("pointsArray", response.response.points);
+        responseFragment.setArguments(bundle);
+
+        getFragmentManager().beginTransaction()
+                .addToBackStack("request")
+                .replace(R.id.main_layout, responseFragment)
+                .commit();
+
 
     }
 
