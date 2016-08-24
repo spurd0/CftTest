@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import com.spudesc.cfttest.Data.ServerResponse;
+import com.spudesc.cfttest.Fragments.RequestFragment;
 import com.spudesc.cfttest.Interfaces.ResponseInterface;
 import com.spudesc.cfttest.Tasks.RequestBuilder;
 import com.spudesc.cfttest.Interfaces.RequestInterface;
@@ -21,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface, ResponseInterface{
     Thread requestThread;
+    RequestFragment requestFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +60,14 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
+    public void cancelRequest() {
+        if (requestThread != null && requestThread.isAlive()) requestThread.interrupt();
+    }
+
+    @Override
     public void successServerResponse(ServerResponse response) {
         Log.d("serverResponse is", String.valueOf(response.response.message));
-    }
+        }
 
     @Override
     public void busyErrorServerResponse(ServerResponse response) {
@@ -106,6 +113,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                 builder.show();
             }
         });
+    }
+
+    private void showRequestFragment(){
+        if (requestFragment == null) {
+            requestFragment = new RequestFragment();
+        }
+
+        //add data to fragment via bundle
+
     }
 
 }

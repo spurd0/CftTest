@@ -5,4 +5,5 @@ package com.spudesc.cfttest.Interfaces;
  */
 public interface RequestInterface {
     void requestPoints(int count);
+    void cancelRequest();
 }

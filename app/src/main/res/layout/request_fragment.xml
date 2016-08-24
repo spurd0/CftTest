@@ -27,8 +27,9 @@
             android:hint="@string/points_count_hint"
             android:singleLine="true"
             android:gravity="center"
-            android:layout_margin="20dp"
-            />
+            android:layout_margin="20dp">
+        <requestFocus />
+    </EditText>
 
         <Button
             android:layout_width="wrap_content"
