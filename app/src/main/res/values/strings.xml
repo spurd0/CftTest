@@ -14,4 +14,5 @@
     <string name="sorted_points_array">sortedPointsArray</string>
     <string name="permission_strogage_err">No permission to write to your External storage, please enable it in app settings</string>
     <string name="graph_saved">Graph saved</string>
+    <string name="error">Some error occurred</string>
 </resources>

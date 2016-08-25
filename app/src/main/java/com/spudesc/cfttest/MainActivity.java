@@ -250,10 +250,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void saveScreenshot() {
-        Log.d("TAG", "Is accelerated " + chart.isHardwareAccelerated());
-        Bitmap bitmap;
+        Log.d("saveScreenshot", "Is accelerated " + chart.isHardwareAccelerated());
+        Bitmap bitmap = null;
         chart.setDrawingCacheEnabled(true);
-        bitmap = Bitmap.createBitmap(chart.getDrawingCache());
+        try {
+            bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware aceleration
+        } catch (IllegalStateException iex) {
+            showToast(getResources().getString(R.string.error));
+            return;
+        }
         chart.setDrawingCacheEnabled(false);
         SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
         Date myDate = new Date();
