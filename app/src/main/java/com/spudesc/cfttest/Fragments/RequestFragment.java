@@ -50,7 +50,7 @@ public class RequestFragment extends Fragment {
                     requestInterface.requestPoints(tempCount);
                     requestPerformed = true;
                 } else {
-                    showCountError(getResources().getString(R.string.wrong_params));
+                    showParamsError(getResources().getString(R.string.wrong_params));
                 }
             }
         });
@@ -69,7 +69,7 @@ public class RequestFragment extends Fragment {
         this.requestInterface = ri;
     }
 
-    public void showCountError(final String error) {
+    public void showParamsError(final String error) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

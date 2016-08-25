@@ -1,5 +1,7 @@
 package com.spudesc.cfttest.Tasks;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Interfaces.ResponseInterface;
@@ -74,6 +76,7 @@ public class RequestPointsTask {
             }
             case -100: {
                 ri.wrongParamsServerResponse(serverResponse);
+                break;
             }
             default: {
                 ri.serverErrorResponse(serverResponse);

@@ -6,7 +6,6 @@ import android.net.ConnectivityManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (isNetworkConnected()) {
             if (count < 1) {
                 requestFragment.requestPerformed = false;
-                requestFragment.showCountError(getResources().getString(R.string.wrong_params));
+                requestFragment.showParamsError(getResources().getString(R.string.wrong_params));
                 return;
             }
             if (requestThread != null && requestThread.isAlive()) {
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             requestFragment.setViews(false);
         }
         if (requestFragment != null && requestFragment.isVisible()) {
-            requestFragment.showCountError(getResources().getString(R.string.wrong_params));
+            requestFragment.showParamsError(getResources().getString(R.string.wrong_params));
         }
     }
 
