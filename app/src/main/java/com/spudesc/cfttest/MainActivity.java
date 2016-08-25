@@ -8,12 +8,15 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.spudesc.cfttest.Data.Point;
@@ -26,22 +29,31 @@ import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
 import com.spudesc.cfttest.Tasks.RequestBuilder;
 import com.spudesc.cfttest.Interfaces.RequestInterface;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface,
         ServerResponseInterface, ChartInterface {
     Thread requestThread;
     RequestFragment requestFragment;
     int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
+    View chart;
+    String imagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         showRequestFragment();
+        imagePath = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
+                getResources().getString(R.string.app_name) + File.separatorChar;
     }
 
     @Override
@@ -226,12 +238,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void saveScreenshot(View chart) {
+    public void saveScreenshotIntent(View chart) {
+        this.chart = chart;
         if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Bitmap bitmap;
-            chart.setDrawingCacheEnabled(true);
-            bitmap = Bitmap.createBitmap(chart.getDrawingCache());
-            chart.setDrawingCacheEnabled(false);
+            saveScreenshot();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
@@ -239,9 +249,56 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         }
     }
 
+    private void saveScreenshot() {
+        Log.d("TAG", "Is accelerated " + chart.isHardwareAccelerated());
+        Bitmap bitmap;
+        chart.setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(chart.getDrawingCache());
+        chart.setDrawingCacheEnabled(false);
+        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+        Date myDate = new Date();
+        String date = timeStampFormat.format(myDate);
+        File tempPhoto = new File(imagePath +
+                date + "." + Bitmap.CompressFormat.JPEG);
+        FileOutputStream out = null;
+        try {
+            new File(tempPhoto.getParent()).mkdirs();
+            tempPhoto.createNewFile();
+            out = new FileOutputStream(tempPhoto.getPath());
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        showToast(getResources().getString(R.string.graph_saved));
+    }
+
     boolean checkPermission(String permission)
     {
         int res = checkCallingOrSelfPermission(permission);
         return (res == PackageManager.PERMISSION_GRANTED);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1: { /// WRITE_EXTERNAL_STORAGE_CODE
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    saveScreenshot();
+                } else {
+                    showToast(getResources().getString(R.string.permission_strogage_err));
+                }
+
+            }
+        }
+    }
+
 }

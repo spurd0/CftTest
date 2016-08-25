@@ -2,13 +2,13 @@ package com.spudesc.cfttest.Fragments;
 
 import android.app.Fragment;
 import android.graphics.CornerPathEffect;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -52,20 +52,21 @@ public class ResponseFragment extends Fragment {
     }
 
     private void initViews(){
-        ExpandableHeightGridView gv = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
+        final ExpandableHeightGridView gridView = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
         final GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
         Button saveButt = (Button) getView().findViewById(R.id.saveButton);
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chartInterface.saveScreenshot(graphView);
+                chartInterface.saveScreenshotIntent(graphView);
+
             }
         });
 
         prepareGraphView(graphView);
-        gv.setExpanded(true);
+        gridView.setExpanded(true);
         PointsAdapter adapter = new PointsAdapter(getActivity(), R.id.coordView, points);
-        gv.setAdapter(adapter);
+        gridView.setAdapter(adapter);
     }
 
     private void setCustomPaint(LineGraphSeries series) {

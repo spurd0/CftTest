@@ -6,5 +6,5 @@ import android.view.View;
  * Created by Roman Babenko (roman.babenko@sibers.com) on 8/25/2016.
  */
 public interface ChartInterface {
-    void saveScreenshot(View chart);
+    void saveScreenshotIntent(View chart);
 }
