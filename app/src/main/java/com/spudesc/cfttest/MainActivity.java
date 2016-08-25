@@ -1,5 +1,6 @@
 package com.spudesc.cfttest;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -154,11 +155,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             requestFragment = new RequestFragment();
             requestFragment.setRequestInterface(this);
         }
+
         getFragmentManager().beginTransaction()
                 .add(R.id.main_layout, requestFragment)
                 .commit();
-
-
     }
 
     private void showResponseFragment(Response response){
@@ -170,17 +170,8 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
         getFragmentManager().beginTransaction()
                 .addToBackStack("request")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.main_layout, responseFragment)
                 .commit();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 }

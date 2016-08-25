@@ -74,7 +74,7 @@ public class RequestPointsSender {
         try {
             return conn.getInputStream();
         } catch (FileNotFoundException ex) {
-
+            ex.printStackTrace();
         }
 
         return null;
