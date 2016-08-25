@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.spudesc.cfttest.Data.Response;
 import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Fragments.RequestFragment;
 import com.spudesc.cfttest.Fragments.ResponseFragment;
@@ -24,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity implements RequestInterface, ResponseInterface{
     Thread requestThread;
     RequestFragment requestFragment;
-    ServerResponse response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +73,16 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void successServerResponse(ServerResponse response) {
+    public void successServerResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
-        this.response = response;
+        showResponseFragment(serverResponse.response);
         }
 
     @Override
-    public void busyErrorServerResponse(ServerResponse response) {
+    public void busyErrorServerResponse(ServerResponse response) { // Check response, may be @null
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
@@ -99,6 +99,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (requestFragment != null && requestFragment.isVisible()) {
             requestFragment.showCountError(getResources().getString(R.string.wrong_params));
         }
+    }
+
+    @Override
+    public void serverErrorResponse() {
+        if (requestFragment != null) {
+            requestFragment.requestPerformed = false;
+            requestFragment.setViews(false);
+        }
+        showAd(getResources().getString(R.string.server_error));
     }
 
     private boolean isNetworkConnected() {
@@ -143,17 +152,17 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             requestFragment.setRequestInterface(this);
         }
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_layout, requestFragment)
+                .add(R.id.main_layout, requestFragment)
                 .commit();
 
 
     }
 
-    private void showResponseFragment(){
+    private void showResponseFragment(Response response){
         ResponseFragment responseFragment = new ResponseFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("pointsArray", response.response.points);
+        bundle.putParcelableArrayList(getResources().getString(R.string.points_array), response.points);
         responseFragment.setArguments(bundle);
 
         getFragmentManager().beginTransaction()

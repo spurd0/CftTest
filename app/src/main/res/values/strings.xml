@@ -7,7 +7,8 @@
     <string name="ok_button">OK</string>
     <string name="title_text">Message</string>
     <string name="server_busy">Server is busy, please try later</string>
+    <string name="server_error">Some trouble with server, please try later</string>
     <string name="wrong_params">Wrong parameters, please check counter</string>
     <string name="downloading">Loading, please wait</string>
-
+    <string name="points_array">pointsArray</string>
 </resources>

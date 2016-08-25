@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/coord_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Point Name"
+        android:id="@+id/pointName"
+        android:layout_marginTop="@dimen/coord_margin"
+        android:layout_marginBottom="@dimen/coord_margin"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/pointX" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:id="@+id/pointX"
+        android:layout_below="@+id/pointName"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/coord_margin" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Y"
+        android:id="@+id/pointY"
+        android:layout_below="@+id/pointName"
+        android:layout_toRightOf="@+id/pointX"
+        android:layout_marginLeft="@dimen/coord_margin"/>
+</RelativeLayout>

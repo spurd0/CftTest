@@ -30,9 +30,14 @@ public class RequestPointsTask {
     private void sendRequest() {
         RequestPointsSender rs = new RequestPointsSender(http_url, params);
         try {
-            ServerResponse serverResponse = new Gson().fromJson(responseToString(rs.sendRequest()),
-                    ServerResponse.class);
-            handleServerResponse(serverResponse);
+            InputStream responseStream = rs.sendRequest();
+            if (responseStream == null) {
+                ri.serverErrorResponse();
+            } else {
+                ServerResponse serverResponse = new Gson().fromJson(responseToString(responseStream),
+                        ServerResponse.class);
+                handleServerResponse(serverResponse);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {

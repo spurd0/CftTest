@@ -11,4 +11,5 @@ public interface ResponseInterface {
     void successServerResponse(ServerResponse response);
     void busyErrorServerResponse(ServerResponse response);
     void wrongParamsServerResponse(ServerResponse response);
+    void serverErrorResponse();
 }
