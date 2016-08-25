@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (response == null) {
             showAd(getResources().getString(R.string.server_error));
         } else {
-            showAd(response.response.message);
+            showAd(response.response.message); //TODO handle russian
         }
     }
 

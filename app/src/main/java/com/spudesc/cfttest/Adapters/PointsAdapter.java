@@ -35,22 +35,32 @@ public class PointsAdapter extends ArrayAdapter<Point> {
         return points.get(position);
     }
 
+    static class ViewHolder {
+        public TextView pointName;
+        public TextView pointX;
+        public TextView pointY;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+        ViewHolder holder;
         Point point = getItem(position);
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext())
+        if (view == null) {
+            view = LayoutInflater.from(getContext())
                     .inflate(R.layout.table_element, null);
-        }
+            holder = new ViewHolder();
+            holder.pointName = (TextView) view.findViewById(R.id.pointName);
+            holder.pointX = (TextView) view.findViewById(R.id.pointX);
+            holder.pointY = (TextView) view.findViewById(R.id.pointY);
+            view.setTag(holder);
+        } else holder = (ViewHolder) view.getTag();
 
-        ((TextView) convertView.findViewById(R.id.pointName))
-                .setText("Point " + (position + 1) + ":");
-        ((TextView) convertView.findViewById(R.id.pointX))
-                .setText(String.valueOf("X=" + point.x));
-        ((TextView) convertView.findViewById(R.id.pointY))
-                .setText(String.valueOf("Y=" + point.y));
+        holder.pointName.setText("Point " + (position + 1) + ":");
+        holder.pointX.setText(String.valueOf("X=" + point.x));
+        holder.pointY.setText(String.valueOf("Y=" + point.y));
 
-        return convertView;
+        return view;
     }
 }
