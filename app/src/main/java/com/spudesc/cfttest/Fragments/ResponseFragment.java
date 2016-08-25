@@ -47,6 +47,5 @@ public class ResponseFragment extends Fragment {
         gv.setExpanded(true);
         PointsAdapter adapter = new PointsAdapter(getActivity(), R.id.coordView, points);
         gv.setAdapter(adapter);
-        Log.d("TAG", "Size is " + adapter.getCount());
     }
 }

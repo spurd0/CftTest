@@ -102,12 +102,16 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void serverErrorResponse() {
+    public void serverErrorResponse(ServerResponse response) {
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
-        showAd(getResources().getString(R.string.server_error));
+        if (response == null) {
+            showAd(getResources().getString(R.string.server_error));
+        } else {
+            showAd(response.response.message);
+        }
     }
 
     private boolean isNetworkConnected() {

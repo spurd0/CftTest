@@ -32,7 +32,7 @@ public class RequestPointsTask {
         try {
             InputStream responseStream = rs.sendRequest();
             if (responseStream == null) {
-                ri.serverErrorResponse();
+                ri.serverErrorResponse(null);
             } else {
                 ServerResponse serverResponse = new Gson().fromJson(responseToString(responseStream),
                         ServerResponse.class);
@@ -72,9 +72,11 @@ public class RequestPointsTask {
                 ri.busyErrorServerResponse(serverResponse);
                 break;
             }
-            case -100:
-            default: {
+            case -100: {
                 ri.wrongParamsServerResponse(serverResponse);
+            }
+            default: {
+                ri.serverErrorResponse(serverResponse);
                 break;
             }
         }

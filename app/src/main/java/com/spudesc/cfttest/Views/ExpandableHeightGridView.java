@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-public class ExpandableHeightGridView extends GridView {
+public class ExpandableHeightGridView extends GridView { // fix if u use grid view inside scrollview
 
     boolean expanded = false;
 
