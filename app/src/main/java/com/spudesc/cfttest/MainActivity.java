@@ -30,13 +30,17 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //requestPoints(3);
         showRequestFragment();
     }
 
     @Override
     public void requestPoints(final int count) {
         if (isNetworkConnected()) {
+            if (count < 1) {
+                requestFragment.requestPerformed = false;
+                requestFragment.showCountError(getResources().getString(R.string.wrong_params));
+                return;
+            }
             if (requestThread != null && requestThread.isAlive()) {
                 requestThread.interrupt();
             }
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                     }
                 }
             };
+            requestFragment.setViews(true);
             requestThread.start();
         } else {
             showToast(getResources().getString(R.string.network_error));
@@ -69,27 +74,30 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void successServerResponse(ServerResponse response) {
-        if (requestFragment != null) requestFragment.requestPerformed = false;
+        if (requestFragment != null) {
+            requestFragment.requestPerformed = false;
+            requestFragment.setViews(false);
+        }
         this.response = response;
         }
 
     @Override
     public void busyErrorServerResponse(ServerResponse response) {
-        if (requestFragment != null) requestFragment.requestPerformed = false;
+        if (requestFragment != null) {
+            requestFragment.requestPerformed = false;
+            requestFragment.setViews(false);
+        }
         showAd(getResources().getString(R.string.server_busy));
     }
 
     @Override
     public void wrongParamsServerResponse(final ServerResponse response) {
-        if (requestFragment != null) requestFragment.requestPerformed = false;
+        if (requestFragment != null) {
+            requestFragment.requestPerformed = false;
+            requestFragment.setViews(false);
+        }
         if (requestFragment != null && requestFragment.isVisible()) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    requestFragment.
-                            showCountError(getResources().getString(R.string.wrong_params) + response.response.message);
-                }
-            });
+            requestFragment.showCountError(getResources().getString(R.string.wrong_params));
         }
     }
 
@@ -152,8 +160,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                 .addToBackStack("request")
                 .replace(R.id.main_layout, responseFragment)
                 .commit();
-
-
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

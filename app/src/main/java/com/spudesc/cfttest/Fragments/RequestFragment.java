@@ -1,9 +1,7 @@
 package com.spudesc.cfttest.Fragments;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,18 +17,13 @@ import com.spudesc.cfttest.R;
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
 public class RequestFragment extends Fragment {
-    RequestInterface ri;
-    public boolean requestPerformed;
     String TAG = "RequestFragment";
-    EditText etCounter;
-    int count;
-    public ProgressBar pdRequest;
+    RequestInterface requestInterface;
+    public boolean requestPerformed;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        count = 0;
-    }
+    EditText etCounter;
+    ProgressBar pbRequest;
+    Button goButt;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,23 +38,19 @@ public class RequestFragment extends Fragment {
     }
 
     private void initViews() {
-        Button goButt = (Button) getView().findViewById(R.id.goButt);
+        goButt = (Button) getView().findViewById(R.id.goButt);
         etCounter = (EditText) getView().findViewById(R.id.etCounter);
-        pdRequest = (ProgressBar) getView().findViewById(R.id.pbRequest);
+        pbRequest = (ProgressBar) getView().findViewById(R.id.pbRequest);
         goButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int tempCount = Integer.valueOf(etCounter.getText().toString());
-                if (etCounter.getText().length() == 0 || tempCount < 1) {
-                    showCountError(getResources().getString(R.string.wrong_params));
-                    Log.e(TAG, "count is incorrect");
-                }
-                else {
+                if (etCounter.getText().toString().length() > 0) {
+                    int tempCount = Integer.valueOf(etCounter.getText().toString());
                     Log.d(TAG, "count is " + tempCount);
-                    ri.requestPoints(tempCount); // disable button + edittext
-                    pdRequest.setVisibility(View.VISIBLE);
+                    requestInterface.requestPoints(tempCount);
                     requestPerformed = true;
-                    count = tempCount;
+                } else {
+                    showCountError(getResources().getString(R.string.wrong_params));
                 }
             }
         });
@@ -70,17 +59,37 @@ public class RequestFragment extends Fragment {
     @Override
     public void onPause() {
         if (requestPerformed) {
-            ri.cancelRequest();
+            requestInterface.cancelRequest();
             requestPerformed = false;
         }
         super.onPause();
     }
 
     public void setRequestInterface(RequestInterface ri) {
-        this.ri = ri;
+        this.requestInterface = ri;
     }
 
-    public void showCountError(String error) {
-        etCounter.setError(error);
+    public void showCountError(final String error) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                etCounter.setError(error);
+            }
+        });
+    }
+
+    public void setViews(final boolean performed) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                etCounter.setEnabled(!performed);
+                goButt.setEnabled(!performed);
+                if (performed) {
+                    pbRequest.setVisibility(View.VISIBLE);
+                } else {
+                    pbRequest.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 }
