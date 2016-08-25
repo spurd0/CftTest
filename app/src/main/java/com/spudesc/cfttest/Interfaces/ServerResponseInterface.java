@@ -7,7 +7,7 @@ import java.io.InputStream;
 /**
  * Created by Roman Babenko (roman.babenko@sibers.com) on 8/24/2016.
  */
-public interface ResponseInterface {
+public interface ServerResponseInterface {
     void successServerResponse(ServerResponse response);
     void busyErrorServerResponse(ServerResponse response);
     void wrongParamsServerResponse(ServerResponse response);

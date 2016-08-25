@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.spudesc.cfttest.Adapters.PointsAdapter;
 import com.spudesc.cfttest.Data.Point;
+import com.spudesc.cfttest.Interfaces.ChartInterface;
 import com.spudesc.cfttest.R;
 import com.spudesc.cfttest.Views.ExpandableHeightGridView;
 
@@ -23,6 +25,7 @@ import java.util.ArrayList;
  */
 public class ResponseFragment extends Fragment {
     ArrayList<Point> points;
+    ChartInterface chartInterface;
     Point[] graphPoints;
 
     @Override
@@ -50,7 +53,14 @@ public class ResponseFragment extends Fragment {
 
     private void initViews(){
         ExpandableHeightGridView gv = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
-        GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
+        final GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
+        Button saveButt = (Button) getView().findViewById(R.id.saveButton);
+        saveButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chartInterface.saveScreenshot(graphView);
+            }
+        });
 
         prepareGraphView(graphView);
         gv.setExpanded(true);
@@ -74,6 +84,9 @@ public class ResponseFragment extends Fragment {
         graphView.addSeries(series);
         graphView.computeScroll();
         graphView.getViewport().setScalable(true); //works, but conflicts with scrollview
+    }
 
+    public void setChartInterface(ChartInterface chartInterface) {
+        this.chartInterface = chartInterface;
     }
 }

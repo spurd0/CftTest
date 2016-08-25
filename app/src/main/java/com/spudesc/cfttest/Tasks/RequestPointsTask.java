@@ -1,10 +1,8 @@
 package com.spudesc.cfttest.Tasks;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.spudesc.cfttest.Data.ServerResponse;
-import com.spudesc.cfttest.Interfaces.ResponseInterface;
+import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
 import com.spudesc.cfttest.Managers.RequestPointsSender;
 
 import java.io.BufferedReader;
@@ -20,9 +18,9 @@ import java.security.NoSuchAlgorithmException;
 public class RequestPointsTask {
     private String http_url;
     private String params;
-    private ResponseInterface ri;
+    private ServerResponseInterface ri;
 
-    public RequestPointsTask(String http_url, String params, ResponseInterface ri) {
+    public RequestPointsTask(String http_url, String params, ServerResponseInterface ri) {
         this.http_url = http_url;
         this.params = params;
         this.ri = ri;

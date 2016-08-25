@@ -1,13 +1,19 @@
 package com.spudesc.cfttest;
 
+import android.Manifest;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.spudesc.cfttest.Data.Point;
@@ -15,7 +21,8 @@ import com.spudesc.cfttest.Data.Response;
 import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Fragments.RequestFragment;
 import com.spudesc.cfttest.Fragments.ResponseFragment;
-import com.spudesc.cfttest.Interfaces.ResponseInterface;
+import com.spudesc.cfttest.Interfaces.ChartInterface;
+import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
 import com.spudesc.cfttest.Tasks.RequestBuilder;
 import com.spudesc.cfttest.Interfaces.RequestInterface;
 
@@ -24,9 +31,11 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements RequestInterface, ResponseInterface{
+public class MainActivity extends AppCompatActivity implements RequestInterface,
+        ServerResponseInterface, ChartInterface {
     Thread requestThread;
     RequestFragment requestFragment;
+    int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             if (requestThread != null && requestThread.isAlive()) {
                 requestThread.interrupt();
             }
-            final ResponseInterface ri = this;
+            final ServerResponseInterface ri = this;
             requestThread = new Thread() {
                 @Override
                 public void run() {
@@ -165,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void showResponseFragment(Response response){
         ResponseFragment responseFragment = new ResponseFragment();
+        responseFragment.setChartInterface(this);
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(getResources().getString(R.string.points_array),
@@ -213,5 +223,25 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         }
         quickSorting(points, start, cur);
         quickSorting(points, cur+1, end);
+    }
+
+    @Override
+    public void saveScreenshot(View chart) {
+        if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Bitmap bitmap;
+            chart.setDrawingCacheEnabled(true);
+            bitmap = Bitmap.createBitmap(chart.getDrawingCache());
+            chart.setDrawingCacheEnabled(false);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
+            }
+        }
+    }
+
+    boolean checkPermission(String permission)
+    {
+        int res = checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
     }
 }

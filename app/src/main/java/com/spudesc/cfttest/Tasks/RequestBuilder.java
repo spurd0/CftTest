@@ -1,9 +1,7 @@
 package com.spudesc.cfttest.Tasks;
 
-import android.app.Activity;
-
 import com.spudesc.cfttest.Data.RequestParams;
-import com.spudesc.cfttest.Interfaces.ResponseInterface;
+import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +16,7 @@ import java.util.ArrayList;
 public class RequestBuilder {
 
 
-    public static RequestPointsTask getRequestedPoints(int count, ResponseInterface ri) throws NoSuchAlgorithmException, IOException, KeyManagementException {
+    public static RequestPointsTask getRequestedPoints(int count, ServerResponseInterface ri) throws NoSuchAlgorithmException, IOException, KeyManagementException {
         String request = "https://demo.bankplus.ru/mobws/json/pointsList/";
         ArrayList<RequestParams> params = new ArrayList<RequestParams>();
         params.add(new RequestParams("count", String.valueOf(count)));
