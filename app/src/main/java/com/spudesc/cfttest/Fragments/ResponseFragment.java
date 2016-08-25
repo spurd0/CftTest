@@ -2,12 +2,13 @@ package com.spudesc.cfttest.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+import android.widget.LinearLayout;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.spudesc.cfttest.Adapters.PointsAdapter;
 import com.spudesc.cfttest.Data.Point;
 import com.spudesc.cfttest.R;
@@ -43,7 +44,14 @@ public class ResponseFragment extends Fragment {
     }
 
     private void initViews(){
+        LinearLayout linearLayout = (LinearLayout) getView().findViewById(R.id.responseLinLayout);
         ExpandableHeightGridView gv = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
+        GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
+        LineGraphSeries exampleSeries = new LineGraphSeries(new Point[]{new Point(1,4), new Point(4,8),
+                new Point(12,12)});
+        graphView.addSeries(exampleSeries);
+
+
         gv.setExpanded(true);
         PointsAdapter adapter = new PointsAdapter(getActivity(), R.id.coordView, points);
         gv.setAdapter(adapter);
