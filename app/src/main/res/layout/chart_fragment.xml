@@ -11,12 +11,29 @@
         android:id="@+id/scrollView" >
 
 
-        <com.spudesc.cfttest.Views.ExpandableHeightGridView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:id="@+id/coordView"
-            android:numColumns="auto_fit"
-            />
+            android:layout_height="wrap_content">
+
+            <com.spudesc.cfttest.Views.ExpandableHeightGridView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/coordView"
+                android:numColumns="auto_fit"
+                />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" />
+
+        </LinearLayout>
+
+
     </ScrollView>
+
+
 </LinearLayout>
