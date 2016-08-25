@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 public class ResponseFragment extends Fragment {
     ArrayList<Point> points;
+    Point[] graphPoints;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,8 @@ public class ResponseFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             points = bundle.getParcelableArrayList(getResources().getString(R.string.points_array));
+            graphPoints = (Point[]) bundle.getParcelableArray(getResources().
+                    getString(R.string.sorted_points_array));
         }
     }
 
@@ -47,8 +50,7 @@ public class ResponseFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout) getView().findViewById(R.id.responseLinLayout);
         ExpandableHeightGridView gv = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
         GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
-        LineGraphSeries exampleSeries = new LineGraphSeries(new Point[]{new Point(1,4), new Point(4,8),
-                new Point(12,12)});
+        LineGraphSeries exampleSeries = new LineGraphSeries(graphPoints);
         graphView.addSeries(exampleSeries);
 
 

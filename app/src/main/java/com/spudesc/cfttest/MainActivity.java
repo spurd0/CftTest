@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.spudesc.cfttest.Data.Point;
 import com.spudesc.cfttest.Data.Response;
 import com.spudesc.cfttest.Data.ServerResponse;
 import com.spudesc.cfttest.Fragments.RequestFragment;
@@ -21,6 +22,7 @@ import com.spudesc.cfttest.Interfaces.RequestInterface;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface, ResponseInterface{
     Thread requestThread;
@@ -165,7 +167,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         ResponseFragment responseFragment = new ResponseFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(getResources().getString(R.string.points_array), response.points);
+        bundle.putParcelableArrayList(getResources().getString(R.string.points_array),
+                response.points);
+        bundle.putParcelableArray(getResources().getString(R.string.sorted_points_array),
+                prepareArrayForGraph(response.points));
         responseFragment.setArguments(bundle);
 
         getFragmentManager().beginTransaction()
@@ -173,5 +178,40 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.main_layout, responseFragment)
                 .commit();
+    }
+
+    private Point[] prepareArrayForGraph(ArrayList<Point> input) {
+        Point[] data = new Point[input.size()];
+        for (int i = 0; i < input.size(); i++) {
+            data[i] = input.get(i);
+        }
+        quickSorting(data, 0, data.length - 1);
+        return data;
+    }
+
+    private void quickSorting(Point[] points, int start, int end) {
+        if (start >= end)
+            return;
+        int i = start, j = end;
+        int cur = i - (i - j) / 2;
+        while (i < j) {
+            while (i < cur && (points[i].getX() <= points[cur].getX())) {
+                i++;
+            }
+            while (j > cur && (points[cur].getX() <= points[j].getX())) {
+                j--;
+            }
+            if (i < j) {
+                Point temp = points[i];
+                points[i] = points[j];
+                points[j] = temp;
+                if (i == cur)
+                    cur = j;
+                else if (j == cur)
+                    cur = i;
+            }
+        }
+        quickSorting(points, start, cur);
+        quickSorting(points, cur+1, end);
     }
 }

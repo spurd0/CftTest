@@ -11,4 +11,5 @@
     <string name="wrong_params">Wrong parameters, please check counter</string>
     <string name="downloading">Loading, please wait</string>
     <string name="points_array">pointsArray</string>
+    <string name="sorted_points_array">sortedPointsArray</string>
 </resources>
