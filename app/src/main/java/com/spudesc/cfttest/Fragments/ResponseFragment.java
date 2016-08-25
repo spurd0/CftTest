@@ -1,7 +1,10 @@
 package com.spudesc.cfttest.Fragments;
 
 import android.app.Fragment;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,15 +50,35 @@ public class ResponseFragment extends Fragment {
     }
 
     private void initViews(){
-        LinearLayout linearLayout = (LinearLayout) getView().findViewById(R.id.responseLinLayout);
         ExpandableHeightGridView gv = (ExpandableHeightGridView) getView().findViewById(R.id.coordView);
         GraphView graphView = (GraphView) getView().findViewById(R.id.pointsGraphView);
-        LineGraphSeries exampleSeries = new LineGraphSeries(graphPoints);
-        graphView.addSeries(exampleSeries);
 
-
+        prepareGraphView(graphView);
         gv.setExpanded(true);
         PointsAdapter adapter = new PointsAdapter(getActivity(), R.id.coordView, points);
         gv.setAdapter(adapter);
+    }
+
+
+    /**
+     * @param series sets custom paint for graph, can be used to change to circle lines
+     */
+    private void addCustiomPaint(LineGraphSeries series) {
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(getResources().getColor(android.R.color.white));
+        paint.setStrokeWidth(10);
+        paint.setPathEffect(new DashPathEffect(new float[]{8, 5}, 0));
+        series.setCustomPaint(paint);
+    }
+
+    private void prepareGraphView(GraphView graphView) {
+        LineGraphSeries series = new LineGraphSeries(graphPoints);
+        addCustiomPaint(series);
+
+        graphView.addSeries(series);
+        graphView.computeScroll();
+        graphView.getViewport().setScalable(true);
+
     }
 }

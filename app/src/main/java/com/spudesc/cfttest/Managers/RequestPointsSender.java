@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -65,10 +66,14 @@ public class RequestPointsSender {
         conn.setDoOutput(true);
         conn.setUseCaches(false);
 
-        Writer out = new OutputStreamWriter(conn.getOutputStream());
-        out.write(params);
-        out.flush();
-        out.close();
+        try {
+            Writer out = new OutputStreamWriter(conn.getOutputStream());
+            out.write(params);
+            out.flush();
+            out.close();
+        } catch (SocketTimeoutException ex) {
+            return null;
+        }
 
         conn.connect();
         try {
