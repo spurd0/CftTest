@@ -61,7 +61,7 @@ public class ResponseFragment extends Fragment {
 
 
     /**
-     * @param series sets custom paint for graph, can be used to change to circle lines
+     * Sets custom paint for graph, can be used to change lines to circle form.
      */
     private void addCustiomPaint(LineGraphSeries series) {
         Paint paint = new Paint();
