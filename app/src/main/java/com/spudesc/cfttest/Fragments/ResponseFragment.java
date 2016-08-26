@@ -29,7 +29,6 @@ public class ResponseFragment extends Fragment {
     ArrayList<Point> points;
     ChartInterface chartInterface;
     Point[] graphPoints;
-    String TAG = "ResponseFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,6 @@ public class ResponseFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
         States.state = States.activeFragment.responceFragment;
     }

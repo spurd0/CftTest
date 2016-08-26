@@ -18,12 +18,12 @@ import java.security.NoSuchAlgorithmException;
 public class RequestPointsTask {
     private String http_url;
     private String params;
-    private ServerResponseInterface ri;
+    private ServerResponseInterface serverResponseInterface;
 
-    public RequestPointsTask(String http_url, String params, ServerResponseInterface ri) {
+    public RequestPointsTask(String http_url, String params, ServerResponseInterface serverResponseInterface) {
         this.http_url = http_url;
         this.params = params;
-        this.ri = ri;
+        this.serverResponseInterface = serverResponseInterface;
         sendRequest();
     }
 
@@ -32,7 +32,7 @@ public class RequestPointsTask {
         try {
             InputStream responseStream = rs.sendRequest();
             if (responseStream == null) {
-                ri.serverErrorResponse(null);
+                serverResponseInterface.serverErrorResponse(null);
             } else {
                 ServerResponse serverResponse = new Gson().fromJson(responseToString(responseStream),
                         ServerResponse.class);
@@ -65,19 +65,19 @@ public class RequestPointsTask {
         int result = serverResponse.result;
         switch (result) {
             case 0: {
-                ri.successServerResponse(serverResponse);
+                serverResponseInterface.successServerResponse(serverResponse);
                 break;
             }
             case -1: {
-                ri.busyErrorServerResponse(serverResponse);
+                serverResponseInterface.busyErrorServerResponse(serverResponse);
                 break;
             }
             case -100: {
-                ri.wrongParamsServerResponse(serverResponse);
+                serverResponseInterface.wrongParamsServerResponse(serverResponse);
                 break;
             }
             default: {
-                ri.serverErrorResponse(serverResponse);
+                serverResponseInterface.serverErrorResponse(serverResponse);
                 break;
             }
         }

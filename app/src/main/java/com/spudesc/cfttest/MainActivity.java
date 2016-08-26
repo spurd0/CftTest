@@ -49,14 +49,9 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     View chart;
     String imagePath;
-    String TAG = "MainActivity";
-    String VISIBLE_FRAGMENT = "visibleFragment";
-    String REQUEST_FRAGMENT = "requestFragment";
-    String RESPONSE_FRAGMENT = "responseFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
@@ -68,13 +63,11 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     public void onRequestFragmentCreated(RequestFragment fragment) {
-        Log.d(TAG, "onRequestFragmentCreated");
         requestFragment = fragment;
         renewRequestFragment();
     }
 
     public void onResponseFragmentCreated(ResponseFragment fragment) {
-        Log.d(TAG, "onResponseFragmentCreated");
         responseFragment = fragment;
         renewResponseFragment();
     }
@@ -292,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         Bitmap bitmap = null;
         chart.setDrawingCacheEnabled(true);
         try {
-            bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware aceleration
+            bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
         } catch (IllegalStateException iex) {
             showToast(getResources().getString(R.string.error));
             return;

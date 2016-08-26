@@ -29,7 +29,7 @@ public class RequestBuilder {
         boolean first = true;
 
         for (RequestParams param : params) {
-            if (first) {
+            if (first) { //todo remade adding &
                 first = false;
             } else {
                 parameters.append("&");

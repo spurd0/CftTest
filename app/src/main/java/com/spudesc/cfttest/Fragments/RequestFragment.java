@@ -23,7 +23,6 @@ import com.spudesc.cfttest.R;
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
 public class RequestFragment extends Fragment {
-    String TAG = "RequestFragment";
     String COUNT_KEY = "count";
     RequestInterface requestInterface;
     public boolean requestPerformed;
@@ -35,13 +34,11 @@ public class RequestFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
         States.state = States.activeFragment.requestFragment;
     }
@@ -62,7 +59,6 @@ public class RequestFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
         outState.putString(COUNT_KEY, text);
     }
 
@@ -75,7 +71,6 @@ public class RequestFragment extends Fragment {
             public void onClick(View view) {
                 if (etCounter.getText().toString().length() > 0) {
                     int count = Integer.valueOf(etCounter.getText().toString());
-                    Log.d(TAG, "count is " + count);
                     requestInterface.requestPoints(count);
                     requestPerformed = true;
                 } else {
@@ -108,7 +103,6 @@ public class RequestFragment extends Fragment {
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause");
         if (requestPerformed) {
             requestInterface.cancelRequest();
             requestPerformed = false;
