@@ -16,12 +16,10 @@ import java.util.ArrayList;
  * Created by Roman Babenko (rbab@yandex.ru) on 8/25/2016.
  */
 public class PointsAdapter extends ArrayAdapter<Point> {
-    Context context;
     ArrayList<Point> points;
 
     public PointsAdapter(Context context, int resource, ArrayList<Point> points) {
         super(context, resource);
-        this.context = context;
         this.points = points;
     }
 

@@ -9,7 +9,7 @@ import java.io.InputStream;
  */
 public interface ServerResponseInterface {
     void successServerResponse(ServerResponse response);
-    void busyErrorServerResponse(ServerResponse response);
+    void serverIsBusyResponse(ServerResponse response);
     void wrongParamsServerResponse(ServerResponse response);
     void serverErrorResponse(ServerResponse response);
 }

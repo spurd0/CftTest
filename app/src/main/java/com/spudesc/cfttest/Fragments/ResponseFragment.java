@@ -79,7 +79,7 @@ public class ResponseFragment extends Fragment {
     }
 
     private void setCustomPaint(LineGraphSeries series) {
-          Paint paint = new Paint();
+        Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(getResources().getColor(android.R.color.holo_red_light));
         paint.setStrokeWidth(5);

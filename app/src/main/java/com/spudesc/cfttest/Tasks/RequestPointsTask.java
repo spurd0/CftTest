@@ -69,7 +69,7 @@ public class RequestPointsTask {
                 break;
             }
             case -1: {
-                serverResponseInterface.busyErrorServerResponse(serverResponse);
+                serverResponseInterface.serverIsBusyResponse(serverResponse);
                 break;
             }
             case -100: {

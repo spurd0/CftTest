@@ -44,8 +44,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements RequestInterface,
         ServerResponseInterface, ChartInterface {
     Thread requestThread;
+
     RequestFragment requestFragment;
     ResponseFragment responseFragment;
+
     int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     View chart;
     String imagePath;
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void busyErrorServerResponse(ServerResponse response) {
+    public void serverIsBusyResponse(ServerResponse response) {
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
