@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.spudesc.cfttest.Interfaces.RequestInterface;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void busyErrorServerResponse(ServerResponse response) { // Check response, may be @null
+    public void busyErrorServerResponse(ServerResponse response) {
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
@@ -146,15 +148,20 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void serverErrorResponse(ServerResponse response) {
+    public void serverErrorResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
             requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
-        if (response == null) {
+        if (serverResponse == null) {
             showAd(getResources().getString(R.string.server_error));
         } else {
-            showAd(response.response.message); //TODO handle russian
+            byte[] data = Base64.decode(serverResponse.response.message, Base64.DEFAULT);
+            try {
+                showAd(new String(data, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            };
         }
     }
 
