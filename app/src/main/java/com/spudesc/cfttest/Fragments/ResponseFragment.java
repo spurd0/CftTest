@@ -99,4 +99,13 @@ public class ResponseFragment extends Fragment {
     public void setChartInterface(ChartInterface chartInterface) {
         this.chartInterface = chartInterface;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(getResources().
+                getString(R.string.points_array), points);
+        outState.putParcelableArray(getResources().
+                getString(R.string.sorted_points_array), graphPoints);
+    }
 }

@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     View chart;
     String imagePath;
+    boolean capturingGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,39 +282,46 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void saveScreenshot() {
-        Log.d("saveScreenshot", "Is accelerated " + chart.isHardwareAccelerated());
-        Bitmap bitmap = null;
-        chart.setDrawingCacheEnabled(true);
-        try {
-            bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
-        } catch (IllegalStateException iex) {
-            showToast(getResources().getString(R.string.error));
-            return;
-        }
-        chart.setDrawingCacheEnabled(false);
-        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
-        Date myDate = new Date();
-        String date = timeStampFormat.format(myDate);
-        File tempPhoto = new File(imagePath +
-                date + "." + Bitmap.CompressFormat.JPEG);
-        FileOutputStream out = null;
-        try {
-            new File(tempPhoto.getParent()).mkdirs();
-            tempPhoto.createNewFile();
-            out = new FileOutputStream(tempPhoto.getPath());
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+        if (!capturingGraph) {
+            capturingGraph = true;
+            Log.d("saveScreenshot", "Is accelerated " + chart.isHardwareAccelerated());
+            Bitmap bitmap = null;
+            chart.setDrawingCacheEnabled(true);
             try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
+            } catch (IllegalStateException iex) {
+                showToast(getResources().getString(R.string.error));
+                capturingGraph = false;
+                return;
             }
+            finally {
+                chart.setDrawingCacheEnabled(false);
+            }
+            SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+            Date myDate = new Date();
+            String date = timeStampFormat.format(myDate);
+            File tempPhoto = new File(imagePath +
+                    date + "." + Bitmap.CompressFormat.JPEG);
+            FileOutputStream out = null;
+            try {
+                new File(tempPhoto.getParent()).mkdirs();
+                tempPhoto.createNewFile();
+                out = new FileOutputStream(tempPhoto.getPath());
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            capturingGraph = false;
+            showToast(getResources().getString(R.string.graph_saved));
         }
-        showToast(getResources().getString(R.string.graph_saved));
     }
 
     boolean checkPermission(String permission) {
