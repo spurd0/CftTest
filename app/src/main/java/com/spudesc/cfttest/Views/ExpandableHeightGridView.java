@@ -1,7 +1,7 @@
 package com.spudesc.cfttest.Views;
 
 /**
- * Created by Roman Babenko (roman.babenko@sibers.com) on 8/25/2016.
+ * Created by Roman Babenko (rbab@yandex.ru) on 8/25/2016.
  */
 import android.content.Context;
 import android.util.AttributeSet;

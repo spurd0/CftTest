@@ -1,7 +1,11 @@
 package com.spudesc.cfttest.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import com.spudesc.cfttest.Data.States;
 import com.spudesc.cfttest.Interfaces.RequestInterface;
+import com.spudesc.cfttest.MainActivity;
 import com.spudesc.cfttest.R;
 
 /**
@@ -18,12 +24,27 @@ import com.spudesc.cfttest.R;
  */
 public class RequestFragment extends Fragment {
     String TAG = "RequestFragment";
+    String COUNT_KEY = "count";
     RequestInterface requestInterface;
     public boolean requestPerformed;
+    String text;
 
     EditText etCounter;
     ProgressBar pbRequest;
     Button goButt;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        States.state = States.activeFragment.requestFragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,10 +55,18 @@ public class RequestFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initViews();
+        initViews(savedInstanceState);
+        ((MainActivity) getActivity()).onRequestFragmentCreated(this); // todo remake to event
     }
 
-    private void initViews() {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState");
+        outState.putString(COUNT_KEY, text);
+    }
+
+    private void initViews(Bundle savedInstanceState) {
         goButt = (Button) getView().findViewById(R.id.goButt);
         etCounter = (EditText) getView().findViewById(R.id.etCounter);
         pbRequest = (ProgressBar) getView().findViewById(R.id.pbRequest);
@@ -45,19 +74,41 @@ public class RequestFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (etCounter.getText().toString().length() > 0) {
-                    int tempCount = Integer.valueOf(etCounter.getText().toString());
-                    Log.d(TAG, "count is " + tempCount);
-                    requestInterface.requestPoints(tempCount);
+                    int count = Integer.valueOf(etCounter.getText().toString());
+                    Log.d(TAG, "count is " + count);
+                    requestInterface.requestPoints(count);
                     requestPerformed = true;
                 } else {
                     showParamsError(getResources().getString(R.string.wrong_params));
                 }
             }
         });
+
+        etCounter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                text = s.toString();
+            }
+        });
+
+        if (savedInstanceState != null) {
+            etCounter.setText(savedInstanceState.getString(COUNT_KEY));
+        }
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause");
         if (requestPerformed) {
             requestInterface.cancelRequest();
             requestPerformed = false;

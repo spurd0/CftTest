@@ -4,17 +4,19 @@ import android.app.Fragment;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.spudesc.cfttest.Adapters.PointsAdapter;
 import com.spudesc.cfttest.Data.Point;
+import com.spudesc.cfttest.Data.States;
 import com.spudesc.cfttest.Interfaces.ChartInterface;
+import com.spudesc.cfttest.MainActivity;
 import com.spudesc.cfttest.R;
 import com.spudesc.cfttest.Views.ExpandableHeightGridView;
 
@@ -27,6 +29,7 @@ public class ResponseFragment extends Fragment {
     ArrayList<Point> points;
     ChartInterface chartInterface;
     Point[] graphPoints;
+    String TAG = "ResponseFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,13 @@ public class ResponseFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        States.state = States.activeFragment.responceFragment;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.chart_fragment, container, false);
@@ -49,6 +59,7 @@ public class ResponseFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews();
+        ((MainActivity) getActivity()).onResponseFragmentCreated(this); // todo remake to event
     }
 
     private void initViews(){

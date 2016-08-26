@@ -5,7 +5,7 @@ import com.spudesc.cfttest.Data.ServerResponse;
 import java.io.InputStream;
 
 /**
- * Created by Roman Babenko (roman.babenko@sibers.com) on 8/24/2016.
+ * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.
  */
 public interface ServerResponseInterface {
     void successServerResponse(ServerResponse response);

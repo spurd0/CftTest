@@ -13,7 +13,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by Roman Babenko (roman.babenko@sibers.com) on 8/24/2016.
+ * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.
  */
 public class RequestPointsTask {
     private String http_url;

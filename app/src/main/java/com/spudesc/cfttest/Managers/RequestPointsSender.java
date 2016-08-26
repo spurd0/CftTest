@@ -16,7 +16,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * Created by Roman Babenko (roman.babenko@sibers.com) on 8/24/2016.
+ * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.
  */
 public class RequestPointsSender {
     private String httpUrl;

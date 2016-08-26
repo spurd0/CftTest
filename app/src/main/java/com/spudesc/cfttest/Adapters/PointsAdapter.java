@@ -13,7 +13,7 @@ import com.spudesc.cfttest.R;
 import java.util.ArrayList;
 
 /**
- * Created by Roman Babenko (roman.babenko@sibers.com) on 8/25/2016.
+ * Created by Roman Babenko (rbab@yandex.ru) on 8/25/2016.
  */
 public class PointsAdapter extends ArrayAdapter<Point> {
     Context context;

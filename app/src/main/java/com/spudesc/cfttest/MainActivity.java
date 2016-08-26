@@ -10,18 +10,19 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.spudesc.cfttest.Data.Point;
 import com.spudesc.cfttest.Data.Response;
 import com.spudesc.cfttest.Data.ServerResponse;
+import com.spudesc.cfttest.Data.States;
 import com.spudesc.cfttest.Fragments.RequestFragment;
 import com.spudesc.cfttest.Fragments.ResponseFragment;
 import com.spudesc.cfttest.Interfaces.ChartInterface;
@@ -42,18 +43,38 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         ServerResponseInterface, ChartInterface {
     Thread requestThread;
     RequestFragment requestFragment;
+    ResponseFragment responseFragment;
     int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     View chart;
     String imagePath;
+    String TAG = "MainActivity";
+    String VISIBLE_FRAGMENT = "visibleFragment";
+    String REQUEST_FRAGMENT = "requestFragment";
+    String RESPONSE_FRAGMENT = "responseFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showRequestFragment();
+        if (savedInstanceState == null) {
+            showRequestFragment();
+        }
         imagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
+    }
+
+    public void onRequestFragmentCreated(RequestFragment fragment) {
+        Log.d(TAG, "onRequestFragmentCreated");
+        requestFragment = fragment;
+        renewRequestFragment();
+    }
+
+    public void onResponseFragmentCreated(ResponseFragment fragment) {
+        Log.d(TAG, "onResponseFragmentCreated");
+        responseFragment = fragment;
+        renewResponseFragment();
     }
 
     @Override
@@ -102,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             requestFragment.setViews(false);
         }
         showResponseFragment(serverResponse.response);
-        }
+    }
 
     @Override
     public void busyErrorServerResponse(ServerResponse response) { // Check response, may be @null
@@ -173,20 +194,30 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         });
     }
 
-    private void showRequestFragment(){
-        if (requestFragment == null) {
-            requestFragment = new RequestFragment();
-            requestFragment.setRequestInterface(this);
-        }
+    private void showRequestFragment() {
+        requestFragment = new RequestFragment();
+        requestFragment.setRequestInterface(this);
+
 
         getFragmentManager().beginTransaction()
-                .add(R.id.main_layout, requestFragment)
+                .replace(R.id.main_layout, requestFragment)
                 .commit();
     }
 
-    private void showResponseFragment(Response response){
-        ResponseFragment responseFragment = new ResponseFragment();
-        responseFragment.setChartInterface(this);
+    private void renewRequestFragment() {
+        if (requestFragment != null) {
+            requestFragment.setRequestInterface(this);
+        }
+    }
+
+    private void renewResponseFragment() {
+        if (responseFragment != null) {
+            responseFragment.setChartInterface(this);
+        }
+    }
+
+    private void showResponseFragment(Response response) {
+        responseFragment = new ResponseFragment();
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(getResources().getString(R.string.points_array),
@@ -234,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             }
         }
         quickSorting(points, start, cur);
-        quickSorting(points, cur+1, end);
+        quickSorting(points, cur + 1, end);
     }
 
     @Override
@@ -285,8 +316,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         showToast(getResources().getString(R.string.graph_saved));
     }
 
-    boolean checkPermission(String permission)
-    {
+    boolean checkPermission(String permission) {
         int res = checkCallingOrSelfPermission(permission);
         return (res == PackageManager.PERMISSION_GRANTED);
     }
@@ -307,3 +337,4 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
 }
+
