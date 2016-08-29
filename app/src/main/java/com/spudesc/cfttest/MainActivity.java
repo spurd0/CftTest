@@ -44,7 +44,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements RequestInterface,
         ServerResponseInterface, ChartInterface {
     Thread requestThread;
-
     RequestFragment requestFragment;
     ResponseFragment responseFragment;
 

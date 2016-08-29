@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +82,7 @@ public class ResponseFragment extends Fragment {
     private void setCustomPaint(LineGraphSeries series) {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getResources().getColor(android.R.color.holo_red_light));
+        paint.setColor(ContextCompat.getColor(getActivity(), android.R.color.holo_red_light));
         paint.setStrokeWidth(5);
         paint.setPathEffect(new CornerPathEffect(1500f));
         series.setCustomPaint(paint);
