@@ -8,7 +8,7 @@ import com.jjoe64.graphview.series.DataPointInterface;
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
-public class Point implements Parcelable, DataPointInterface {
+public class Point implements Parcelable, DataPointInterface, Comparable {
     public double x;
     public double y;
 
@@ -53,5 +53,19 @@ public class Point implements Parcelable, DataPointInterface {
     @Override
     public double getY() {
         return y;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        Point tmp = (Point) another;
+        if (this.x < tmp.x) {
+            return -1;
+        }
+
+        if (this.x > tmp.x) {
+            return 1;
+        }
+
+        return 0;
     }
 }

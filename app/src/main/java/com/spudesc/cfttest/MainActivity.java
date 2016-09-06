@@ -37,6 +37,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface,
@@ -224,34 +225,8 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         for (int i = 0; i < input.size(); i++) {
             data[i] = input.get(i);
         }
-        quickSorting(data, 0, data.length - 1);
+        Arrays.sort(data);
         return data;
-    }
-
-    private void quickSorting(Point[] points, int start, int end) {
-        if (start >= end)
-            return;
-        int i = start, j = end;
-        int cur = i - (i - j) / 2;
-        while (i < j) {
-            while (i < cur && (points[i].getX() <= points[cur].getX())) {
-                i++;
-            }
-            while (j > cur && (points[cur].getX() <= points[j].getX())) {
-                j--;
-            }
-            if (i < j) {
-                Point temp = points[i];
-                points[i] = points[j];
-                points[j] = temp;
-                if (i == cur)
-                    cur = j;
-                else if (j == cur)
-                    cur = i;
-            }
-        }
-        quickSorting(points, start, cur);
-        quickSorting(points, cur + 1, end);
     }
 
     @Override

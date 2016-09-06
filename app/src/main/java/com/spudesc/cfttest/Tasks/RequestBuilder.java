@@ -35,9 +35,9 @@ public class RequestBuilder {
                 parameters.append("&");
             }
             try {
-                parameters.append(URLEncoder.encode(param.getmName(), "UTF-8"));
+                parameters.append(URLEncoder.encode(param.getName(), "UTF-8"));
                 parameters.append("=");
-                parameters.append(URLEncoder.encode(param.getmValue(), "UTF-8"));
+                parameters.append(URLEncoder.encode(param.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

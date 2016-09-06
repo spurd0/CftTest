@@ -12,11 +12,11 @@ public class RequestParams {
         this.mValue = value;
     }
 
-    public String getmName() {
+    public String getName() {
         return mName;
     }
 
-    public String getmValue() {
+    public String getValue() {
         return mValue;
     }
 }
