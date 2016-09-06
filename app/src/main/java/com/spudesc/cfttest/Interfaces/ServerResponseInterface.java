@@ -1,8 +1,6 @@
-package com.spudesc.cfttest.Interfaces;
+package com.spudesc.cfttest.interfaces;
 
-import com.spudesc.cfttest.Data.ServerResponse;
-
-import java.io.InputStream;
+import com.spudesc.cfttest.data.ServerResponse;
 
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.

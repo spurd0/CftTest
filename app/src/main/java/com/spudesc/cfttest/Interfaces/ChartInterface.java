@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Interfaces;
+package com.spudesc.cfttest.interfaces;
 
 import android.view.View;
 

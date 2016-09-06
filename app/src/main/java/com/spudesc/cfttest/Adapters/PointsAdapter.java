@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Adapters;
+package com.spudesc.cfttest.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.spudesc.cfttest.Data.Point;
+import com.spudesc.cfttest.data.Point;
 import com.spudesc.cfttest.R;
 
 import java.util.ArrayList;
@@ -16,21 +16,21 @@ import java.util.ArrayList;
  * Created by Roman Babenko (rbab@yandex.ru) on 8/25/2016.
  */
 public class PointsAdapter extends ArrayAdapter<Point> {
-    ArrayList<Point> points;
+    private ArrayList<Point> mPoints;
 
-    public PointsAdapter(Context context, int resource, ArrayList<Point> points) {
+    public PointsAdapter(Context context, int resource, ArrayList<Point> mPoints) {
         super(context, resource);
-        this.points = points;
+        this.mPoints = mPoints;
     }
 
     @Override
     public int getCount() {
-        return points.size();
+        return mPoints.size();
     }
 
     @Override
     public Point getItem(int position) {
-        return points.get(position);
+        return mPoints.get(position);
     }
 
     static class ViewHolder {

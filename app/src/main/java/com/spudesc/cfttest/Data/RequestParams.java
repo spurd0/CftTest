@@ -1,22 +1,22 @@
-package com.spudesc.cfttest.Data;
+package com.spudesc.cfttest.data;
 
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
 public class RequestParams {
-    private String name;
-    private String value; //TODO remade for int
+    private String mName;
+    private String mValue;
 
     public RequestParams(String name, String value) {
-        this.name = name;
-        this.value = value;
+        this.mName = name;
+        this.mValue = value;
     }
 
-    public String getName() {
-        return name;
+    public String getmName() {
+        return mName;
     }
 
-    public String getValue() {
-        return value;
+    public String getmValue() {
+        return mValue;
     }
 }

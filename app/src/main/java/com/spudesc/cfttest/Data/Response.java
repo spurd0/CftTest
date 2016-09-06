@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Data;
+package com.spudesc.cfttest.data;
 
 import java.util.ArrayList;
 

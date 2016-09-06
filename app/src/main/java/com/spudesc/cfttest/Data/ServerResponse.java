@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Data;
+package com.spudesc.cfttest.data;
 
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.

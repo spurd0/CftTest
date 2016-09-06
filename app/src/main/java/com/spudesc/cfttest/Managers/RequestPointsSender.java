@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Managers;
+package com.spudesc.cfttest.managers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,13 +19,13 @@ import javax.net.ssl.X509TrustManager;
  * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.
  */
 public class RequestPointsSender {
-    private String httpUrl;
-    private SSLContext sc;
-    private String params;
+    private String mHttpUrl;
+    private SSLContext mSC;
+    private String mParams;
 
-    public RequestPointsSender(String httpUrl, String params) {
+    public RequestPointsSender(String httpUrl, String mParams) {
         try {
-            sc = SSLContext.getInstance("SSL");
+            mSC = SSLContext.getInstance("SSL");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -45,19 +45,19 @@ public class RequestPointsSender {
                 }
         };
         try {
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            mSC.init(null, trustAllCerts, new java.security.SecureRandom());
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
-        this.httpUrl = httpUrl;
-        this.params = params;
+        this.mHttpUrl = httpUrl;
+        this.mParams = mParams;
     }
 
 
     public InputStream sendRequest() throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        URL url = new URL(httpUrl);
+        URL url = new URL(mHttpUrl);
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setSSLSocketFactory(sc.getSocketFactory());
+        conn.setSSLSocketFactory(mSC.getSocketFactory());
 
         conn.setReadTimeout(7000);
         conn.setConnectTimeout(7000);
@@ -68,7 +68,7 @@ public class RequestPointsSender {
 
         try {
             Writer out = new OutputStreamWriter(conn.getOutputStream());
-            out.write(params);
+            out.write(mParams);
             out.flush();
             out.close();
         } catch (SocketTimeoutException ex) {

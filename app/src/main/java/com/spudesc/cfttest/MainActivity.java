@@ -10,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,16 +19,15 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.spudesc.cfttest.Data.Point;
-import com.spudesc.cfttest.Data.Response;
-import com.spudesc.cfttest.Data.ServerResponse;
-import com.spudesc.cfttest.Data.States;
-import com.spudesc.cfttest.Fragments.RequestFragment;
-import com.spudesc.cfttest.Fragments.ResponseFragment;
-import com.spudesc.cfttest.Interfaces.ChartInterface;
-import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
-import com.spudesc.cfttest.Tasks.RequestBuilder;
-import com.spudesc.cfttest.Interfaces.RequestInterface;
+import com.spudesc.cfttest.data.Point;
+import com.spudesc.cfttest.data.Response;
+import com.spudesc.cfttest.data.ServerResponse;
+import com.spudesc.cfttest.fragments.RequestFragment;
+import com.spudesc.cfttest.fragments.ResponseFragment;
+import com.spudesc.cfttest.interfaces.ChartInterface;
+import com.spudesc.cfttest.interfaces.ServerResponseInterface;
+import com.spudesc.cfttest.tasks.RequestBuilder;
+import com.spudesc.cfttest.interfaces.RequestInterface;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,14 +41,13 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface,
         ServerResponseInterface, ChartInterface {
-    Thread requestThread;
-    RequestFragment requestFragment;
-    ResponseFragment responseFragment;
+    private RequestFragment requestFragment;
+    private ResponseFragment responseFragment;
 
-    int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
-    View chart;
-    String imagePath;
-    boolean capturingGraph;
+    static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
+    private View mChart;
+    private String mImagePath;
+    private boolean mCapturingGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (savedInstanceState == null) {
             showRequestFragment();
         }
-        imagePath = Environment.getExternalStoragePublicDirectory(
+        mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
     }
@@ -78,15 +75,11 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     public void requestPoints(final int count) {
         if (isNetworkConnected()) {
             if (count < 1) {
-                requestFragment.requestPerformed = false;
                 requestFragment.showParamsError(getResources().getString(R.string.wrong_params));
                 return;
             }
-            if (requestThread != null && requestThread.isAlive()) {
-                requestThread.interrupt();
-            }
             final ServerResponseInterface ri = this;
-            requestThread = new Thread() {
+            Thread requestThread = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -109,14 +102,8 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     @Override
-    public void cancelRequest() {
-        if (requestThread != null && requestThread.isAlive()) requestThread.interrupt();
-    }
-
-    @Override
     public void successServerResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
-            requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
         showResponseFragment(serverResponse.response);
@@ -125,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void serverIsBusyResponse(ServerResponse response) {
         if (requestFragment != null) {
-            requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
         showAd(getResources().getString(R.string.server_busy));
@@ -134,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void wrongParamsServerResponse(final ServerResponse response) {
         if (requestFragment != null) {
-            requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
         if (requestFragment != null && requestFragment.isVisible()) {
@@ -145,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void serverErrorResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
-            requestFragment.requestPerformed = false;
             requestFragment.setViews(false);
         }
         if (serverResponse == null) {
@@ -198,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void showRequestFragment() {
         requestFragment = new RequestFragment();
-        requestFragment.setRequestInterface(this);
+        requestFragment.setmRequestInterface(this);
 
 
         getFragmentManager().beginTransaction()
@@ -208,13 +192,13 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void renewRequestFragment() {
         if (requestFragment != null) {
-            requestFragment.setRequestInterface(this);
+            requestFragment.setmRequestInterface(this);
         }
     }
 
     private void renewResponseFragment() {
         if (responseFragment != null) {
-            responseFragment.setChartInterface(this);
+            responseFragment.setmChartInterface(this);
         }
     }
 
@@ -272,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void saveScreenshotIntent(View chart) {
-        this.chart = chart;
+        this.mChart = chart;
         if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             saveScreenshot();
         } else {
@@ -283,25 +267,25 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void saveScreenshot() {
-        if (!capturingGraph) {
-            capturingGraph = true;
-            Log.d("saveScreenshot", "Is accelerated " + chart.isHardwareAccelerated());
+        if (!mCapturingGraph) {
+            mCapturingGraph = true;
+            Log.d("saveScreenshot", "Is accelerated " + mChart.isHardwareAccelerated());
             Bitmap bitmap = null;
-            chart.setDrawingCacheEnabled(true);
+            mChart.setDrawingCacheEnabled(true);
             try {
-                bitmap = Bitmap.createBitmap(chart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
+                bitmap = Bitmap.createBitmap(mChart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
             } catch (IllegalStateException iex) {
                 showToast(getResources().getString(R.string.error));
-                capturingGraph = false;
+                mCapturingGraph = false;
                 return;
             }
             finally {
-                chart.setDrawingCacheEnabled(false);
+                mChart.setDrawingCacheEnabled(false);
             }
             SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
             Date myDate = new Date();
             String date = timeStampFormat.format(myDate);
-            File tempPhoto = new File(imagePath +
+            File tempPhoto = new File(mImagePath +
                     date + "." + Bitmap.CompressFormat.JPEG);
             FileOutputStream out = null;
             try {
@@ -320,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                     e.printStackTrace();
                 }
             }
-            capturingGraph = false;
+            mCapturingGraph = false;
             showToast(getResources().getString(R.string.graph_saved));
         }
     }

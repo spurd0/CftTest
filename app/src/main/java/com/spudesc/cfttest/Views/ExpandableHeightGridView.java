@@ -10,7 +10,7 @@ import android.widget.GridView;
 
 public class ExpandableHeightGridView extends GridView { // fix if u use grid view inside scrollview
 
-    boolean expanded = false;
+    private boolean mExpanded = false;
 
     public ExpandableHeightGridView(Context context)
     {
@@ -28,16 +28,16 @@ public class ExpandableHeightGridView extends GridView { // fix if u use grid vi
         super(context, attrs, defStyle);
     }
 
-    public boolean isExpanded()
+    public boolean ismExpanded()
     {
-        return expanded;
+        return mExpanded;
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         // HACK! TAKE THAT ANDROID!
-        if (isExpanded())
+        if (ismExpanded())
         {
             // Calculate entire height by providing a very large height hint.
             // View.MEASURED_SIZE_MASK represents the largest height possible.
@@ -54,7 +54,7 @@ public class ExpandableHeightGridView extends GridView { // fix if u use grid vi
         }
     }
 
-    public void setExpanded(boolean expanded)
+    public void setmExpanded(boolean mExpanded)
     {
-        this.expanded = expanded;
+        this.mExpanded = mExpanded;
     } }

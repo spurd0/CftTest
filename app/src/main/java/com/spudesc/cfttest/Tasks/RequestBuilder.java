@@ -1,7 +1,7 @@
-package com.spudesc.cfttest.Tasks;
+package com.spudesc.cfttest.tasks;
 
-import com.spudesc.cfttest.Data.RequestParams;
-import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
+import com.spudesc.cfttest.data.RequestParams;
+import com.spudesc.cfttest.interfaces.ServerResponseInterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -35,9 +35,9 @@ public class RequestBuilder {
                 parameters.append("&");
             }
             try {
-                parameters.append(URLEncoder.encode(param.getName(), "UTF-8"));
+                parameters.append(URLEncoder.encode(param.getmName(), "UTF-8"));
                 parameters.append("=");
-                parameters.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                parameters.append(URLEncoder.encode(param.getmValue(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

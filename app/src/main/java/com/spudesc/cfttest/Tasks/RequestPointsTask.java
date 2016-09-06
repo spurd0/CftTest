@@ -1,9 +1,9 @@
-package com.spudesc.cfttest.Tasks;
+package com.spudesc.cfttest.tasks;
 
 import com.google.gson.Gson;
-import com.spudesc.cfttest.Data.ServerResponse;
-import com.spudesc.cfttest.Interfaces.ServerResponseInterface;
-import com.spudesc.cfttest.Managers.RequestPointsSender;
+import com.spudesc.cfttest.data.ServerResponse;
+import com.spudesc.cfttest.interfaces.ServerResponseInterface;
+import com.spudesc.cfttest.managers.RequestPointsSender;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,23 +16,23 @@ import java.security.NoSuchAlgorithmException;
  * Created by Roman Babenko (rbab@yandex.ru) on 8/24/2016.
  */
 public class RequestPointsTask {
-    private String http_url;
-    private String params;
-    private ServerResponseInterface serverResponseInterface;
+    private String mHttp_url;
+    private String mParams;
+    private ServerResponseInterface mServerResponseInterface;
 
     public RequestPointsTask(String http_url, String params, ServerResponseInterface serverResponseInterface) {
-        this.http_url = http_url;
-        this.params = params;
-        this.serverResponseInterface = serverResponseInterface;
+        this.mHttp_url = http_url;
+        this.mParams = params;
+        this.mServerResponseInterface = serverResponseInterface;
         sendRequest();
     }
 
     private void sendRequest() {
-        RequestPointsSender rs = new RequestPointsSender(http_url, params);
+        RequestPointsSender rs = new RequestPointsSender(mHttp_url, mParams);
         try {
             InputStream responseStream = rs.sendRequest();
             if (responseStream == null) {
-                serverResponseInterface.serverErrorResponse(null);
+                mServerResponseInterface.serverErrorResponse(null);
             } else {
                 ServerResponse serverResponse = new Gson().fromJson(responseToString(responseStream),
                         ServerResponse.class);
@@ -65,19 +65,19 @@ public class RequestPointsTask {
         int result = serverResponse.result;
         switch (result) {
             case 0: {
-                serverResponseInterface.successServerResponse(serverResponse);
+                mServerResponseInterface.successServerResponse(serverResponse);
                 break;
             }
             case -1: {
-                serverResponseInterface.serverIsBusyResponse(serverResponse);
+                mServerResponseInterface.serverIsBusyResponse(serverResponse);
                 break;
             }
             case -100: {
-                serverResponseInterface.wrongParamsServerResponse(serverResponse);
+                mServerResponseInterface.wrongParamsServerResponse(serverResponse);
                 break;
             }
             default: {
-                serverResponseInterface.serverErrorResponse(serverResponse);
+                mServerResponseInterface.serverErrorResponse(serverResponse);
                 break;
             }
         }

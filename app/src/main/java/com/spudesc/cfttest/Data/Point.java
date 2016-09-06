@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Data;
+package com.spudesc.cfttest.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
