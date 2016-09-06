@@ -40,7 +40,7 @@ public class RequestFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews(savedInstanceState);
-        ((MainActivity) getActivity()).onRequestFragmentCreated(this); // todo remake to event
+        ((MainActivity) getActivity()).onRequestFragmentCreated(this);
     }
 
     private void initViews(Bundle savedInstanceState) {

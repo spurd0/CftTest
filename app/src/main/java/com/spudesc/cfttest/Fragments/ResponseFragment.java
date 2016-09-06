@@ -50,7 +50,7 @@ public class ResponseFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews();
-        ((MainActivity) getActivity()).onResponseFragmentCreated(this); // todo remake to event
+        ((MainActivity) getActivity()).onResponseFragmentCreated(this);
     }
 
     private void initViews(){
