@@ -5,6 +5,7 @@ import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
 public class ResponseFragment extends Fragment {
+    static final String TAG = "ResponseFragment";
     private ArrayList<Point> mPoints;
     private ChartInterface mChartInterface;
     private Point[] mGraphPoints;
@@ -50,7 +52,12 @@ public class ResponseFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews();
-        ((MainActivity) getActivity()).onResponseFragmentCreated(this);
+        try {
+            mChartInterface = (ChartInterface) getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, getActivity().toString()
+                    + " must implement ChartInterface");
+        }
     }
 
     private void initViews(){
@@ -60,7 +67,9 @@ public class ResponseFragment extends Fragment {
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChartInterface.saveScreenshotIntent(graphView);
+                if (mChartInterface != null) mChartInterface.saveScreenshotIntent(graphView);
+                else Log.e(TAG, getActivity().toString()
+                        + " must implement ChartInterface");
 
             }
         });
@@ -87,10 +96,6 @@ public class ResponseFragment extends Fragment {
         graphView.addSeries(series);
         graphView.computeScroll();
         graphView.getViewport().setScalable(true); //works, but conflicts with scrollview
-    }
-
-    public void setmChartInterface(ChartInterface mChartInterface) {
-        this.mChartInterface = mChartInterface;
     }
 
     @Override

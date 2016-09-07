@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.spudesc.cfttest.R;
  * Created by Roman Babenko (rbab@yandex.ru) on 23.08.2016.
  */
 public class RequestFragment extends Fragment {
+    static final String TAG = "RequestFragment";
     private RequestInterface mRequestInterface;
 
     private EditText mEtCounter;
@@ -40,7 +42,12 @@ public class RequestFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews();
-        ((MainActivity) getActivity()).onRequestFragmentCreated(this);
+        try {
+            mRequestInterface = (RequestInterface) getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, getActivity().toString()
+                    + " must implement RequestInterface");
+        }
     }
 
     private void initViews() {
@@ -52,16 +59,14 @@ public class RequestFragment extends Fragment {
             public void onClick(View view) {
                 if (mEtCounter.getText().toString().length() > 0) {
                     int count = Integer.valueOf(mEtCounter.getText().toString());
-                    mRequestInterface.requestPoints(count);
+                    if (mRequestInterface != null) mRequestInterface.requestPoints(count);
+                    else Log.e(TAG, getActivity().toString()
+                            + " must implement RequestInterface");
                 } else {
                     showParamsError(getResources().getString(R.string.wrong_params));
                 }
             }
         });
-    }
-
-    public void setRequestInterface(RequestInterface ri) {
-        this.mRequestInterface = ri;
     }
 
     public void showParamsError(final String error) {

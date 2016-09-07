@@ -29,7 +29,6 @@ import com.spudesc.cfttest.fragments.RequestFragment;
 import com.spudesc.cfttest.fragments.ResponseFragment;
 import com.spudesc.cfttest.interfaces.ChartInterface;
 import com.spudesc.cfttest.loaders.PointsLoader;
-import com.spudesc.cfttest.tasks.RequestBuilder;
 import com.spudesc.cfttest.interfaces.RequestInterface;
 import com.spudesc.cfttest.utils.UtilsHelper;
 
@@ -37,8 +36,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,16 +67,6 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
-    }
-
-    public void onRequestFragmentCreated(RequestFragment fragment) {
-        requestFragment = fragment;
-        renewRequestFragment();
-    }
-
-    public void onResponseFragmentCreated(ResponseFragment fragment) {
-        responseFragment = fragment;
-        renewResponseFragment();
     }
 
     @Override
@@ -194,24 +181,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void showRequestFragment() {
         requestFragment = new RequestFragment();
-        requestFragment.setRequestInterface(this);
-
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_layout, requestFragment)
                 .commit();
-    }
-
-    private void renewRequestFragment() {
-        if (requestFragment != null) {
-            requestFragment.setRequestInterface(this);
-        }
-    }
-
-    private void renewResponseFragment() {
-        if (responseFragment != null) {
-            responseFragment.setmChartInterface(this);
-        }
     }
 
     private void showResponseFragment(Response response) {
