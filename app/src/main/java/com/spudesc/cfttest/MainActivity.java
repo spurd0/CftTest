@@ -44,7 +44,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements RequestInterface,
         ChartInterface, LoaderManager.LoaderCallbacks<ServerResponse>  {
     private RequestFragment requestFragment;
-    private ResponseFragment responseFragment;
 
     static final String TAG = "MainActivity";
 
@@ -61,9 +60,19 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
+            Log.d(TAG, "savedInstanceState == null");
             showRequestFragment();
         }
-        getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
+//        getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
+        if(getLoaderManager().getLoader(LOADER_POINTS_ID) == null) {
+            getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
+            Log.d(TAG, "initLoader");
+        } else {
+//            Log.d(TAG, "restartLoader");
+//            getLoaderManager().restartLoader(LOADER_POINTS_ID, null, this);
+        }
+
+
         mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
@@ -81,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         } else {
             UtilsHelper.showToast(getResources().getString(R.string.network_error), this);
         }
+    }
+
+    @Override
+    public void requestFragmentCreated(int id) {
+        requestFragment = (RequestFragment) getFragmentManager().findFragmentById(id);
     }
 
     private void sendRequest(int count) {
@@ -188,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void showResponseFragment(Response response) {
+        ResponseFragment responseFragment;
         responseFragment = new ResponseFragment();
 
         Bundle bundle = new Bundle();
@@ -285,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "onCreateLoader");
         Loader<ServerResponse> loader = null;
         if (id == LOADER_POINTS_ID) {
             loader = new PointsLoader(this, args);

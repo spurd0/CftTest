@@ -5,4 +5,5 @@ package com.spudesc.cfttest.interfaces;
  */
 public interface RequestInterface {
     void requestPoints(int count);
+    void requestFragmentCreated(int id);
 }

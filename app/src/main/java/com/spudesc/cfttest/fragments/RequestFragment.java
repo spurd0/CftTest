@@ -2,8 +2,6 @@ package com.spudesc.cfttest.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.spudesc.cfttest.interfaces.RequestInterface;
-import com.spudesc.cfttest.MainActivity;
 import com.spudesc.cfttest.R;
 
 /**
@@ -22,6 +19,8 @@ import com.spudesc.cfttest.R;
 public class RequestFragment extends Fragment {
     static final String TAG = "RequestFragment";
     private RequestInterface mRequestInterface;
+    public static final String PERFORMED_KEY = "performed_key";
+    private boolean mPerformed;
 
     private EditText mEtCounter;
     private ProgressBar mPbRequest;
@@ -47,6 +46,11 @@ public class RequestFragment extends Fragment {
         } catch (ClassCastException e) {
             Log.e(TAG, getActivity().toString()
                     + " must implement RequestInterface");
+        }
+        mRequestInterface.requestFragmentCreated(this.getId());
+        if (savedInstanceState != null) {
+            mPerformed = savedInstanceState.getBoolean(PERFORMED_KEY);
+            setViews(mPerformed);
         }
     }
 
@@ -79,6 +83,7 @@ public class RequestFragment extends Fragment {
     }
 
     public void setViews(final boolean performed) {
+        mPerformed = performed;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -91,5 +96,11 @@ public class RequestFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(PERFORMED_KEY, mPerformed);
     }
 }
