@@ -1,4 +1,4 @@
-package com.spudesc.cfttest.Views;
+package com.spudesc.cfttest.views;
 
 /**
  * Created by Roman Babenko (rbab@yandex.ru) on 8/25/2016.

@@ -17,7 +17,7 @@ import com.spudesc.cfttest.data.Point;
 import com.spudesc.cfttest.interfaces.ChartInterface;
 import com.spudesc.cfttest.MainActivity;
 import com.spudesc.cfttest.R;
-import com.spudesc.cfttest.Views.ExpandableHeightGridView;
+import com.spudesc.cfttest.views.ExpandableHeightGridView;
 
 import java.util.ArrayList;
 

@@ -2,11 +2,14 @@ package com.spudesc.cfttest;
 
 import android.Manifest;
 import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -25,9 +28,10 @@ import com.spudesc.cfttest.data.ServerResponse;
 import com.spudesc.cfttest.fragments.RequestFragment;
 import com.spudesc.cfttest.fragments.ResponseFragment;
 import com.spudesc.cfttest.interfaces.ChartInterface;
-import com.spudesc.cfttest.interfaces.ServerResponseInterface;
+import com.spudesc.cfttest.loaders.PointsLoader;
 import com.spudesc.cfttest.tasks.RequestBuilder;
 import com.spudesc.cfttest.interfaces.RequestInterface;
+import com.spudesc.cfttest.utils.UtilsHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,14 +45,16 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements RequestInterface,
-        ServerResponseInterface, ChartInterface {
+        ChartInterface, LoaderManager.LoaderCallbacks<ServerResponse>  {
     private RequestFragment requestFragment;
     private ResponseFragment responseFragment;
 
     static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
+    static final int LOADER_POINTS_ID = 1;
     private View mChart;
     private String mImagePath;
     private boolean mCapturingGraph;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (savedInstanceState == null) {
             showRequestFragment();
         }
+        getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
         mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
@@ -74,35 +81,27 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void requestPoints(final int count) {
-        if (isNetworkConnected()) {
+        if (UtilsHelper.isNetworkConnected(this)) {
             if (count < 1) {
                 requestFragment.showParamsError(getResources().getString(R.string.wrong_params));
                 return;
             }
-            final ServerResponseInterface ri = this;
-            Thread requestThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        RequestBuilder.getRequestedPoints(count, ri);
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (KeyManagementException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
+            sendRequest(count);
             requestFragment.setViews(true);
-            requestThread.start();
         } else {
-            showToast(getResources().getString(R.string.network_error));
+            UtilsHelper.showToast(getResources().getString(R.string.network_error), this);
         }
-
     }
 
-    @Override
+    private void sendRequest(int count) {
+        Bundle args = new Bundle();
+        args.putInt(PointsLoader.ARGS_COUNT_KEY, count);
+        Loader<ServerResponse> loader = getLoaderManager().restartLoader(LOADER_POINTS_ID, args,
+                this);
+        loader.forceLoad();
+    }
+
+
     public void successServerResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
             requestFragment.setViews(false);
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         showResponseFragment(serverResponse.response);
     }
 
-    @Override
+
     public void serverIsBusyResponse(ServerResponse response) {
         if (requestFragment != null) {
             requestFragment.setViews(false);
@@ -118,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         showAd(getResources().getString(R.string.server_busy));
     }
 
-    @Override
+
     public void wrongParamsServerResponse(final ServerResponse response) {
         if (requestFragment != null) {
             requestFragment.setViews(false);
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         }
     }
 
-    @Override
+
     public void serverErrorResponse(ServerResponse serverResponse) {
         if (requestFragment != null) {
             requestFragment.setViews(false);
@@ -145,21 +144,26 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         }
     }
 
-    private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
-    }
-
-    public void showToast(final String text) {
-        final Toast toast = Toast.makeText(getApplicationContext(),
-                text, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                toast.show();
+    private void handleServerAnswer(ServerResponse serverResponse) {
+        int result = serverResponse.result;
+        switch (result) {
+            case 0: {
+                successServerResponse(serverResponse);
+                break;
             }
-        });
+            case -1: {
+                serverIsBusyResponse(serverResponse);
+                break;
+            }
+            case -100: {
+                wrongParamsServerResponse(serverResponse);
+                break;
+            }
+            default: {
+                serverErrorResponse(serverResponse);
+                break;
+            }
+        }
     }
 
     public void showAd(final String text) {
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void showRequestFragment() {
         requestFragment = new RequestFragment();
-        requestFragment.setmRequestInterface(this);
+        requestFragment.setRequestInterface(this);
 
 
         getFragmentManager().beginTransaction()
@@ -193,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     private void renewRequestFragment() {
         if (requestFragment != null) {
-            requestFragment.setmRequestInterface(this);
+            requestFragment.setRequestInterface(this);
         }
     }
 
@@ -232,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void saveScreenshotIntent(View chart) {
         this.mChart = chart;
-        if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (UtilsHelper.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, this)) {
             saveScreenshot();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -250,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
             try {
                 bitmap = Bitmap.createBitmap(mChart.getDrawingCache()); // canvas in graphview doesn`t support hardware acceleration
             } catch (IllegalStateException iex) {
-                showToast(getResources().getString(R.string.error));
+                UtilsHelper.showToast(getResources().getString(R.string.error), this);
                 mCapturingGraph = false;
                 return;
             }
@@ -280,13 +284,8 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                 }
             }
             mCapturingGraph = false;
-            showToast(getResources().getString(R.string.graph_saved));
+            UtilsHelper.showToast(getResources().getString(R.string.graph_saved), this);
         }
-    }
-
-    boolean checkPermission(String permission) {
-        int res = checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -297,12 +296,31 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     saveScreenshot();
                 } else {
-                    showToast(getResources().getString(R.string.permission_strogage_err));
+                    UtilsHelper.showToast(getResources().getString(R.string.permission_strogage_err), this);
                 }
 
             }
         }
     }
 
+    @Override
+    public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
+        Loader<ServerResponse> loader = null;
+        if (id == LOADER_POINTS_ID) {
+            loader = new PointsLoader(this, args);
+            Log.d("MainActivity", "onCreateLoader: " + loader.hashCode());
+        }
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, ServerResponse data) {
+        handleServerAnswer(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
 }
 
