@@ -39,11 +39,11 @@ public class RequestFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initViews(savedInstanceState);
+        initViews();
         ((MainActivity) getActivity()).onRequestFragmentCreated(this);
     }
 
-    private void initViews(Bundle savedInstanceState) {
+    private void initViews() {
         mGoButt = (Button) getView().findViewById(R.id.goButt);
         mEtCounter = (EditText) getView().findViewById(R.id.etCounter);
         mPbRequest = (ProgressBar) getView().findViewById(R.id.pbRequest);
@@ -60,7 +60,7 @@ public class RequestFragment extends Fragment {
         });
     }
 
-    public void setmRequestInterface(RequestInterface ri) {
+    public void setRequestInterface(RequestInterface ri) {
         this.mRequestInterface = ri;
     }
 
