@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by Roman Babenko (roman.babenko@sibers.com) on 9/7/2016.
  */
-public class PointsLoader extends Loader<ServerResponse> {
+public class PointsLoader extends Loader<ServerResponse> implements RequestPointsAsyncTask.RequestPointsInterface {
     static final String TAG = "PointsLoader";
     public static final String ARGS_COUNT_KEY = "count";
     int count;
@@ -45,7 +45,7 @@ public class PointsLoader extends Loader<ServerResponse> {
         super.onForceLoad();
         Log.d(TAG, "onForceLoad " + count);
         try {
-            RequestPointsAsyncTask task = new RequestPointsAsyncTask();
+            RequestPointsAsyncTask task = new RequestPointsAsyncTask(this);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, RequestBuilder.getRequestPointsParams(count));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -54,5 +54,11 @@ public class PointsLoader extends Loader<ServerResponse> {
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deliverResult(ServerResponse data) {
+        Log.d(TAG, "deliverResult");
+        super.deliverResult(data);
     }
 }

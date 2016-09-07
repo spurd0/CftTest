@@ -13,9 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -30,18 +27,37 @@ import javax.net.ssl.X509TrustManager;
  */
 public class RequestPointsAsyncTask extends AsyncTask<String, Void, ServerResponse> {
     public final static String TAG = "RequestPointsAsyncTask";
+    private RequestPointsInterface mInterface;
+
+    public RequestPointsAsyncTask (RequestPointsInterface mInterface) {
+        this.mInterface = mInterface;
+    }
 
     @Override
     protected ServerResponse doInBackground(String... strings) {
         String httpUrl = strings[0];
         String params = strings[1];
-        Log.d(TAG, params);
-        SSLContext mSC = null;
+
         try {
-            mSC = SSLContext.getInstance("SSL");
+            return sendRequest(httpUrl, params);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return null;
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            Log.d(TAG, e.toString());
+            e.printStackTrace();
+            return null;
         }
+    }
+
+    private ServerResponse sendRequest(String httpUrl, String params) throws NoSuchAlgorithmException,
+            KeyManagementException, IOException {
+        SSLContext mSC = null;
+        mSC = SSLContext.getInstance("SSL");
+
         TrustManager[] trustAllCerts = new TrustManager[]{ // i trust cft
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -57,63 +73,35 @@ public class RequestPointsAsyncTask extends AsyncTask<String, Void, ServerRespon
                     }
                 }
         };
-        try {
-            mSC.init(null, trustAllCerts, new java.security.SecureRandom());
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-        URL url = null;
-        try {
-            url = new URL(httpUrl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        HttpsURLConnection conn = null;
-        try {
-            conn = (HttpsURLConnection) url.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        conn.setSSLSocketFactory(mSC.getSocketFactory());
 
+        mSC.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        URL url;
+        url = new URL(httpUrl);
+
+        HttpsURLConnection conn;
+        conn = (HttpsURLConnection) url.openConnection();
+        conn.setSSLSocketFactory(mSC.getSocketFactory());
         conn.setReadTimeout(7000);
         conn.setConnectTimeout(7000);
-        try {
-            conn.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        }
+        conn.setRequestMethod("POST");
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setUseCaches(false);
 
-        try {
-            Writer out = new OutputStreamWriter(conn.getOutputStream());
-            out.write(params);
-            out.flush();
-            out.close();
-        } catch (SocketTimeoutException ex) {
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Writer out = new OutputStreamWriter(conn.getOutputStream());
+        out.write(params);
+        out.flush();
+        out.close();
+        conn.connect();
 
         try {
-            conn.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            return new Gson().fromJson(responseToString(conn.getInputStream()),
+            InputStream responseStream = conn.getInputStream();
+            return new Gson().fromJson(responseToString(responseStream),
                     ServerResponse.class);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
     private String responseToString(InputStream is) {
@@ -128,5 +116,14 @@ public class RequestPointsAsyncTask extends AsyncTask<String, Void, ServerRespon
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    protected void onPostExecute(ServerResponse serverResponse) {
+        mInterface.deliverResult(serverResponse);
+    }
+
+    public interface RequestPointsInterface {
+        void deliverResult(ServerResponse serverResponse);
     }
 }

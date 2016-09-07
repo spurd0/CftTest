@@ -49,11 +49,14 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     private RequestFragment requestFragment;
     private ResponseFragment responseFragment;
 
+    static final String TAG = "MainActivity";
+
     static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     static final int LOADER_POINTS_ID = 1;
     private View mChart;
     private String mImagePath;
     private boolean mCapturingGraph;
+
 
 
     @Override
@@ -145,24 +148,28 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void handleServerAnswer(ServerResponse serverResponse) {
-        int result = serverResponse.result;
-        switch (result) {
-            case 0: {
-                successServerResponse(serverResponse);
-                break;
+        if (serverResponse != null) {
+            int result = serverResponse.result;
+            switch (result) {
+                case 0: {
+                    successServerResponse(serverResponse);
+                    break;
+                }
+                case -1: {
+                    serverIsBusyResponse(serverResponse);
+                    break;
+                }
+                case -100: {
+                    wrongParamsServerResponse(serverResponse);
+                    break;
+                }
+                default: {
+                    serverErrorResponse(serverResponse);
+                    break;
+                }
             }
-            case -1: {
-                serverIsBusyResponse(serverResponse);
-                break;
-            }
-            case -100: {
-                wrongParamsServerResponse(serverResponse);
-                break;
-            }
-            default: {
-                serverErrorResponse(serverResponse);
-                break;
-            }
+        } else {
+            serverErrorResponse(null);
         }
     }
 
@@ -315,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     @Override
     public void onLoadFinished(Loader loader, ServerResponse data) {
+        Log.d(TAG, "onLoadFinished");
         handleServerAnswer(data);
     }
 
