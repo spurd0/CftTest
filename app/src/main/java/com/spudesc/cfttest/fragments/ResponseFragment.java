@@ -76,7 +76,7 @@ public class ResponseFragment extends Fragment {
 
         prepareGraphView(graphView);
         gridView.setmExpanded(true);
-        PointsAdapter adapter = new PointsAdapter(getActivity(), R.id.coordView, mPoints);
+        PointsAdapter adapter = new PointsAdapter(getActivity(), mPoints);
         gridView.setAdapter(adapter);
     }
 

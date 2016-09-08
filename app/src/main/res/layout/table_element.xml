@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/coord_margin">
+    android:layout_marginBottom="@dimen/coord_margin"
+    android:gravity="start">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,7 +13,8 @@
         android:layout_marginTop="@dimen/coord_margin"
         android:layout_marginBottom="@dimen/coord_margin"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/pointX" />
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,8 +22,8 @@
         android:text="X"
         android:id="@+id/pointX"
         android:layout_below="@+id/pointName"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="@dimen/coord_margin" />
+        android:layout_alignParentLeft="false"
+        android:layout_alignLeft="@+id/pointName" />
 
     <TextView
         android:layout_width="wrap_content"
