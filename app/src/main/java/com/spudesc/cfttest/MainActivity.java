@@ -3,14 +3,14 @@ package com.spudesc.cfttest;
 import android.Manifest;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
-import android.content.DialogInterface;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -20,6 +20,7 @@ import android.view.View;
 import com.spudesc.cfttest.data.Point;
 import com.spudesc.cfttest.data.Response;
 import com.spudesc.cfttest.data.ServerResponse;
+import com.spudesc.cfttest.fragments.DialogFragment;
 import com.spudesc.cfttest.fragments.RequestFragment;
 import com.spudesc.cfttest.fragments.ResponseFragment;
 import com.spudesc.cfttest.interfaces.ChartInterface;
@@ -40,15 +41,18 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         ChartInterface, LoaderManager.LoaderCallbacks<ServerResponse>  {
     private RequestFragment requestFragment;
 
-    static final String TAG = "MainActivity";
-
-    static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
-    static final int LOADER_POINTS_ID = 1;
-    static final String RESULT_HANDLED_KEY = "keyHandled";
+    private static final String TAG = "MainActivity";
+    private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
+    private static final int LOADER_POINTS_ID = 1;
+    private static final String RESULT_HANDLED_KEY = "keyHandled";
+    private static final String DIALOG_TAG = "dialog_tag";
+    private static final int SERVER_RESPONSE_ID = 1;
     private View mChart;
     private String mImagePath;
     private boolean mCapturingGraph;
     private boolean mResultHandled;
+    private Handler mHandler;
+    private ServerResponse mServerResponse;
 
 
 
@@ -67,6 +71,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
                 getResources().getString(R.string.app_name) + File.separatorChar;
+
+        mHandler = new Handler()  {
+            @Override
+            public void handleMessage (Message msg) {
+                if (msg.what == SERVER_RESPONSE_ID) {
+                    handleServerAnswer();
+                }
+            }
+        };
     }
 
     @Override
@@ -98,15 +111,15 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
 
-    public void successServerResponse(ServerResponse serverResponse) {
+    public void successServerResponse() {
         if (requestFragment != null) {
             requestFragment.setViews(false);
         }
-        showResponseFragment(serverResponse.response);
+        showResponseFragment(mServerResponse.response);
     }
 
 
-    public void serverIsBusyResponse(ServerResponse response) {
+    public void serverIsBusyResponse() {
         if (requestFragment != null) {
             requestFragment.setViews(false);
         }
@@ -114,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
 
-    public void wrongParamsServerResponse(final ServerResponse response) {
+    public void wrongParamsServerResponse() {
         if (requestFragment != null) {
             requestFragment.setViews(false);
         }
@@ -124,14 +137,14 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
 
-    public void serverErrorResponse(ServerResponse serverResponse) {
+    public void serverErrorResponse() {
         if (requestFragment != null) {
             requestFragment.setViews(false);
         }
-        if (serverResponse == null) {
+        if (mServerResponse == null) {
             showAd(getResources().getString(R.string.server_error));
         } else {
-            byte[] data = Base64.decode(serverResponse.response.message, Base64.DEFAULT);
+            byte[] data = Base64.decode(mServerResponse.response.message, Base64.DEFAULT);
             try {
                 showAd(new String(data, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
@@ -140,50 +153,36 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         }
     }
 
-    private void handleServerAnswer(ServerResponse serverResponse) {
+    private void handleServerAnswer() {
         mResultHandled = true;
-        if (serverResponse != null) {
-            int result = serverResponse.result;
+        if (mServerResponse != null) {
+            int result = mServerResponse.result;
             switch (result) {
                 case 0: {
-                    successServerResponse(serverResponse);
+                    successServerResponse();
                     break;
                 }
                 case -1: {
-                    serverIsBusyResponse(serverResponse);
+                    serverIsBusyResponse();
                     break;
                 }
                 case -100: {
-                    wrongParamsServerResponse(serverResponse);
+                    wrongParamsServerResponse();
                     break;
                 }
                 default: {
-                    serverErrorResponse(serverResponse);
+                    serverErrorResponse();
                     break;
                 }
             }
         } else {
-            serverErrorResponse(null);
+            serverErrorResponse();
         }
     }
 
     public void showAd(final String text) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(getResources().getString(R.string.title_text))
-                .setMessage(text)
-                .setCancelable(true)
-                .setNegativeButton(getResources().getString(R.string.ok_button),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                builder.show();
-            }
-        });
+        DialogFragment dialogFragment = DialogFragment.newInstance(text);
+        dialogFragment.show(getFragmentManager(), DIALOG_TAG);
     }
 
     private void showRequestFragment() {
@@ -297,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         Loader<ServerResponse> loader = null;
         if (id == LOADER_POINTS_ID) {
             loader = new PointsAsyncLoader(this, args);
-            Log.d("MainActivity", "onCreateLoader: " + loader.hashCode());
+            Log.d(TAG, "onCreateLoader: " + loader.hashCode());
         }
         return loader;
     }
@@ -305,7 +304,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void onLoadFinished(Loader loader, ServerResponse data) {
         Log.d(TAG, "onLoadFinished");
-        if (!mResultHandled) handleServerAnswer(data);
+        mServerResponse = data;
+        if (!mResultHandled) {
+            mHandler.sendEmptyMessage(SERVER_RESPONSE_ID);
+        }
     }
 
     @Override

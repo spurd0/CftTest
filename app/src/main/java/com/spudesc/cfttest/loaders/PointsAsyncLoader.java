@@ -2,8 +2,6 @@ package com.spudesc.cfttest.loaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -32,10 +30,10 @@ import javax.net.ssl.X509TrustManager;
  * Created by Roman Babenko (roman.babenko@sibers.com) on 9/7/2016.
  */
 public class PointsAsyncLoader extends AsyncTaskLoader<ServerResponse> {
-    static final String TAG = "PointsAsyncLoader";
+    private static final String TAG = "PointsAsyncLoader";
     public static final String ARGS_COUNT_KEY = "count";
-    private String[] mString;
-    int count;
+    private String[] mHttpParams;
+    private int mCount;
     /**
      * Stores away the application context associated with context.
      * Since Loaders can be used across multiple activities it's dangerous to
@@ -51,10 +49,10 @@ public class PointsAsyncLoader extends AsyncTaskLoader<ServerResponse> {
 
         Log.d(TAG, "PointsAsyncLoader");
         if (args != null) {
-            count = args.getInt(ARGS_COUNT_KEY);
+            mCount = args.getInt(ARGS_COUNT_KEY);
         }
         try {
-            mString = RequestBuilder.getRequestPointsParams(count);
+            mHttpParams = RequestBuilder.getRequestPointsParams(mCount);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -62,14 +60,14 @@ public class PointsAsyncLoader extends AsyncTaskLoader<ServerResponse> {
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "onCreate " + count);
+        Log.d(TAG, "onCreate " + mCount);
     }
 
     @Override
     public ServerResponse loadInBackground() {
         Log.d(TAG, "loadInBackground");
-        String httpUrl = mString[0];
-        String params = mString[1];
+        String httpUrl = mHttpParams[0];
+        String params = mHttpParams[1];
         try {
             try {
                 TimeUnit.SECONDS.sleep(2);
