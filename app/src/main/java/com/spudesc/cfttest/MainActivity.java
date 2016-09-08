@@ -3,13 +3,10 @@ package com.spudesc.cfttest;
 import android.Manifest;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -18,9 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.spudesc.cfttest.data.Point;
 import com.spudesc.cfttest.data.Response;
@@ -28,7 +23,7 @@ import com.spudesc.cfttest.data.ServerResponse;
 import com.spudesc.cfttest.fragments.RequestFragment;
 import com.spudesc.cfttest.fragments.ResponseFragment;
 import com.spudesc.cfttest.interfaces.ChartInterface;
-import com.spudesc.cfttest.loaders.PointsLoader;
+import com.spudesc.cfttest.loaders.PointsAsyncLoader;
 import com.spudesc.cfttest.interfaces.RequestInterface;
 import com.spudesc.cfttest.utils.UtilsHelper;
 
@@ -49,9 +44,11 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
 
     static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 1;
     static final int LOADER_POINTS_ID = 1;
+    static final String RESULT_HANDLED_KEY = "keyHandled";
     private View mChart;
     private String mImagePath;
     private boolean mCapturingGraph;
+    private boolean mResultHandled;
 
 
 
@@ -62,16 +59,10 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         if (savedInstanceState == null) {
             Log.d(TAG, "savedInstanceState == null");
             showRequestFragment();
-        }
-//        getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
-        if(getLoaderManager().getLoader(LOADER_POINTS_ID) == null) {
-            getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
-            Log.d(TAG, "initLoader");
         } else {
-//            Log.d(TAG, "restartLoader");
-//            getLoaderManager().restartLoader(LOADER_POINTS_ID, null, this);
+            mResultHandled = savedInstanceState.getBoolean(RESULT_HANDLED_KEY);
         }
-
+        getLoaderManager().initLoader(LOADER_POINTS_ID, null, this);
 
         mImagePath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES).getPath() + File.separatorChar +
@@ -98,8 +89,9 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void sendRequest(int count) {
+        mResultHandled = false;
         Bundle args = new Bundle();
-        args.putInt(PointsLoader.ARGS_COUNT_KEY, count);
+        args.putInt(PointsAsyncLoader.ARGS_COUNT_KEY, count);
         Loader<ServerResponse> loader = getLoaderManager().restartLoader(LOADER_POINTS_ID, args,
                 this);
         loader.forceLoad();
@@ -149,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     }
 
     private void handleServerAnswer(ServerResponse serverResponse) {
+        mResultHandled = true;
         if (serverResponse != null) {
             int result = serverResponse.result;
             switch (result) {
@@ -303,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
         Log.d(TAG, "onCreateLoader");
         Loader<ServerResponse> loader = null;
         if (id == LOADER_POINTS_ID) {
-            loader = new PointsLoader(this, args);
+            loader = new PointsAsyncLoader(this, args);
             Log.d("MainActivity", "onCreateLoader: " + loader.hashCode());
         }
         return loader;
@@ -312,12 +305,18 @@ public class MainActivity extends AppCompatActivity implements RequestInterface,
     @Override
     public void onLoadFinished(Loader loader, ServerResponse data) {
         Log.d(TAG, "onLoadFinished");
-        handleServerAnswer(data);
+        if (!mResultHandled) handleServerAnswer(data);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(RESULT_HANDLED_KEY, mResultHandled);
     }
 }
 

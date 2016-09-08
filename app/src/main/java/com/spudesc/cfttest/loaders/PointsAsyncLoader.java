@@ -21,6 +21,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -30,8 +31,8 @@ import javax.net.ssl.X509TrustManager;
 /**
  * Created by Roman Babenko (roman.babenko@sibers.com) on 9/7/2016.
  */
-public class PointsLoader extends AsyncTaskLoader<ServerResponse> {
-    static final String TAG = "PointsLoader";
+public class PointsAsyncLoader extends AsyncTaskLoader<ServerResponse> {
+    static final String TAG = "PointsAsyncLoader";
     public static final String ARGS_COUNT_KEY = "count";
     private String[] mString;
     int count;
@@ -45,9 +46,10 @@ public class PointsLoader extends AsyncTaskLoader<ServerResponse> {
      *
      * @param context used to retrieve the application context.
      */
-    public PointsLoader(Context context, Bundle args) {
+    public PointsAsyncLoader(Context context, Bundle args) {
         super(context);
 
+        Log.d(TAG, "PointsAsyncLoader");
         if (args != null) {
             count = args.getInt(ARGS_COUNT_KEY);
         }
@@ -65,9 +67,15 @@ public class PointsLoader extends AsyncTaskLoader<ServerResponse> {
 
     @Override
     public ServerResponse loadInBackground() {
+        Log.d(TAG, "loadInBackground");
         String httpUrl = mString[0];
         String params = mString[1];
         try {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                return null;
+            }
             return sendRequest(httpUrl, params);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
